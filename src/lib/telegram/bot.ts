@@ -1,8 +1,9 @@
 // Telegram Bot Notifications
-// TODO: Configure TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID in .env
+// Settings can be configured via Admin Panel or environment variables
 
-const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
-const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
+import { db } from "@/lib/db";
+import { settings } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
 
 interface ContactNotification {
   name: string;
@@ -13,10 +14,45 @@ interface ContactNotification {
   locale?: string;
 }
 
+async function getTelegramCredentials(): Promise<{
+  botToken: string | null;
+  chatId: string | null;
+}> {
+  // First check environment variables (for deployment flexibility)
+  const envBotToken = process.env.TELEGRAM_BOT_TOKEN;
+  const envChatId = process.env.TELEGRAM_CHAT_ID;
+
+  if (envBotToken && envChatId) {
+    return { botToken: envBotToken, chatId: envChatId };
+  }
+
+  // If not in env, try database settings
+  try {
+    const [botTokenSetting, chatIdSetting] = await Promise.all([
+      db.query.settings.findFirst({
+        where: eq(settings.key, "telegram_bot_token"),
+      }),
+      db.query.settings.findFirst({
+        where: eq(settings.key, "telegram_chat_id"),
+      }),
+    ]);
+
+    return {
+      botToken: botTokenSetting?.value ?? null,
+      chatId: chatIdSetting?.value ?? null,
+    };
+  } catch (error) {
+    console.error("Failed to get Telegram settings from DB:", error);
+    return { botToken: null, chatId: null };
+  }
+}
+
 export async function sendTelegramNotification(
   notification: ContactNotification
 ): Promise<boolean> {
-  if (!BOT_TOKEN || !CHAT_ID) {
+  const { botToken, chatId } = await getTelegramCredentials();
+
+  if (!botToken || !chatId) {
     console.warn("Telegram bot not configured");
     return false;
   }
@@ -25,14 +61,14 @@ export async function sendTelegramNotification(
 
   try {
     const response = await fetch(
-      `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`,
+      `https://api.telegram.org/bot${botToken}/sendMessage`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          chat_id: CHAT_ID,
+          chat_id: chatId,
           text,
           parse_mode: "HTML",
         }),

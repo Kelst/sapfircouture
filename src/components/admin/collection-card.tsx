@@ -1,6 +1,6 @@
 "use client";
 
-import { Link } from "@/i18n/navigation";
+import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,7 +9,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreVertical, Edit, Trash, FolderOpen } from "lucide-react";
+import { MoreVertical, Edit, Trash, FolderOpen, Shirt } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import type { Collection } from "@/lib/db/schema";
 
 interface CollectionCardProps {
@@ -25,6 +26,13 @@ export function CollectionCard({ collection, onDelete }: CollectionCardProps) {
       <Link href={`/admin/collections/${collection.id}`}>
         <div className="aspect-[4/3] relative bg-muted flex items-center justify-center text-muted-foreground group-hover:bg-muted/80 transition-colors">
           <FolderOpen className="h-12 w-12" />
+          <Badge
+            variant="secondary"
+            className="absolute bottom-3 right-3 bg-background/90 backdrop-blur-sm shadow-sm"
+          >
+            <Shirt className="h-3 w-3 mr-1" />
+            {dressCount}
+          </Badge>
         </div>
       </Link>
       <CardContent className="p-4">

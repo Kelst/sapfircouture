@@ -1,8 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { usePathname } from "next/navigation";
-import { Link } from "@/i18n/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   LayoutGrid,
   Palette,
@@ -10,6 +10,9 @@ import {
   ChevronRight,
   Sparkles,
   Home,
+  Users,
+  Share2,
+  Settings,
 } from "lucide-react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -51,7 +54,14 @@ interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
 
 export function AppSidebar({ user, ...props }: AppSidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const { isMobile } = useSidebar();
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.push("/login");
+    router.refresh();
+  };
 
   const initials = user.name
     .split(" ")
@@ -72,6 +82,24 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
       url: "/admin/styles",
       icon: Palette,
       isActive: pathname.includes("/admin/styles"),
+    },
+    {
+      title: "Social Media",
+      url: "/admin/social-media",
+      icon: Share2,
+      isActive: pathname.includes("/admin/social-media"),
+    },
+    {
+      title: "Settings",
+      url: "/admin/settings",
+      icon: Settings,
+      isActive: pathname.includes("/admin/settings"),
+    },
+    {
+      title: "Users",
+      url: "/admin/users",
+      icon: Users,
+      isActive: pathname.includes("/admin/users"),
     },
   ];
 
@@ -176,7 +204,7 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => signOut()}>
+                <DropdownMenuItem onClick={handleSignOut}>
                   <LogOut className="mr-2 h-4 w-4" />
                   Sign Out
                 </DropdownMenuItem>

@@ -8,23 +8,21 @@ export default async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   // Check if accessing admin routes
-  const isAdminRoute = pathname.includes("/admin");
+  const isAdminRoute = pathname.startsWith("/admin");
 
   if (isAdminRoute) {
     // Get session token from cookie (better-auth default cookie name)
     const sessionToken = request.cookies.get("better-auth.session_token")?.value;
 
     if (!sessionToken) {
-      // Redirect to login
-      const locale = pathname.split("/")[1];
-      const validLocale = ["en", "uk"].includes(locale) ? locale : "en";
-      const loginUrl = new URL(`/${validLocale}/login`, request.url);
+      // Redirect to login (use default locale - en)
+      const loginUrl = new URL("/login", request.url);
       loginUrl.searchParams.set("callbackUrl", pathname);
       return NextResponse.redirect(loginUrl);
     }
 
-    // Note: Full role check happens in layout/page components
-    // Middleware only ensures session exists for performance
+    // Skip i18n middleware for admin routes
+    return NextResponse.next();
   }
 
   return intlMiddleware(request);

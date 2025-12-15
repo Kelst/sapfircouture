@@ -120,6 +120,16 @@ export const contactRequests = pgTable("contact_requests", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+export const socialLinks = pgTable("social_links", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  platform: varchar("platform", { length: 50 }).notNull().unique(),
+  url: text("url").notNull(),
+  enabled: boolean("enabled").notNull().default(true),
+  order: integer("order").notNull().default(0),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
 // Relations
 export const collectionsRelations = relations(collections, ({ many }) => ({
   dresses: many(dresses),
@@ -155,3 +165,5 @@ export type NewPage = typeof pages.$inferInsert;
 export type Setting = typeof settings.$inferSelect;
 export type ContactRequest = typeof contactRequests.$inferSelect;
 export type NewContactRequest = typeof contactRequests.$inferInsert;
+export type SocialLink = typeof socialLinks.$inferSelect;
+export type NewSocialLink = typeof socialLinks.$inferInsert;

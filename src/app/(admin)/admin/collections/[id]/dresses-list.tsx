@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition, useOptimistic, useMemo } from "react";
-import { useRouter } from "@/i18n/navigation";
+import { useRouter } from "next/navigation";
 import { DressCard } from "@/components/admin/dress-card";
 import { DeleteDialog } from "@/components/admin/delete-dialog";
 import { ConfirmDialog } from "@/components/admin/confirm-dialog";
