@@ -1,0 +1,1 @@
+ALTER TABLE "dresses" ADD COLUMN "video" text;

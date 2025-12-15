@@ -1,0 +1,60 @@
+services:
+  app:
+    build: .
+    container_name: wedding-app
+    restart: unless-stopped
+    env_file: .env
+    depends_on:
+      - postgres
+      - minio
+    networks:
+      - wedding
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: wedding-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: wedding
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: wedding_salon
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - wedding
+
+  minio:
+    image: minio/minio:latest
+    container_name: wedding-minio
+    restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: ${MINIO_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_PASSWORD}
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    networks:
+      - wedding
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: wedding-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+    depends_on:
+      - app
+    networks:
+      - wedding
+
+volumes:
+  postgres_data:
+  minio_data:
+  caddy_data:
+
+networks:
+  wedding:

@@ -1,0 +1,69 @@
+{
+  "metadata": {
+    "title": "Sapfir Couture - Wedding Salon",
+    "description": "Find your perfect wedding dress"
+  },
+  "nav": {
+    "home": "Home",
+    "catalog": "Catalog",
+    "about": "About",
+    "contacts": "Contacts"
+  },
+  "hero": {
+    "title": "Find Your Dream Dress",
+    "subtitle": "Exclusive wedding dress collection",
+    "cta": "View Catalog"
+  },
+  "catalog": {
+    "title": "Our Collection",
+    "filters": {
+      "all": "All",
+      "style": "Style",
+      "color": "Color",
+      "price": "Price Range"
+    },
+    "noResults": "No dresses found",
+    "details": "View Details"
+  },
+  "about": {
+    "title": "About Us",
+    "description": "Welcome to our wedding salon"
+  },
+  "contacts": {
+    "title": "Contact Us",
+    "form": {
+      "name": "Your Name",
+      "phone": "Phone Number",
+      "email": "Email",
+      "message": "Message",
+      "submit": "Send Message"
+    },
+    "success": "Thank you! We will contact you soon.",
+    "error": "Something went wrong. Please try again."
+  },
+  "admin": {
+    "dashboard": "Dashboard",
+    "dresses": "Dresses",
+    "pages": "Pages",
+    "settings": "Settings",
+    "addNew": "Add New",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel",
+    "publish": "Publish",
+    "unpublish": "Unpublish"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous"
+  }
+}

@@ -1,0 +1,62 @@
+import { notFound } from "next/navigation";
+import { Link } from "@/i18n/navigation";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, Plus, Edit } from "lucide-react";
+import { getCollectionById } from "@/actions/collection.actions";
+import { getStyles } from "@/actions/style.actions";
+import { DressesList } from "./dresses-list";
+
+interface CollectionDetailPageProps {
+  params: Promise<{ id: string }>;
+}
+
+export default async function CollectionDetailPage({
+  params,
+}: CollectionDetailPageProps) {
+  const { id } = await params;
+  const [collection, styles] = await Promise.all([
+    getCollectionById(id),
+    getStyles(),
+  ]);
+
+  if (!collection) {
+    notFound();
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center gap-4">
+          <Link href="/admin/collections">
+            <Button variant="ghost" size="icon">
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+          </Link>
+          <div className="flex-1">
+            <h1 className="text-2xl font-bold">{collection.name}</h1>
+            <p className="text-muted-foreground">
+              {collection.dresses.length}{" "}
+              {collection.dresses.length === 1 ? "dress" : "dresses"}
+            </p>
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Link href={`/admin/collections/${id}/edit`}>
+            <Button variant="outline" size="sm">
+              <Edit className="mr-2 h-4 w-4" />
+              Edit Collection
+            </Button>
+          </Link>
+          <Link href={`/admin/collections/${id}/dresses/new`}>
+            <Button size="sm">
+              <Plus className="mr-2 h-4 w-4" />
+              Add Dress
+            </Button>
+          </Link>
+        </div>
+      </div>
+
+      <DressesList dresses={collection.dresses} collectionId={id} styles={styles} />
+    </div>
+  );
+}
