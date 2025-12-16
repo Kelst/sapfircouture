@@ -18,6 +18,13 @@ const nextConfig: NextConfig = {
         port: s3UrlParsed.port || "",
         pathname: "/**",
       },
+      // Fallback for local development with MinIO
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "9000",
+        pathname: "/wedding-uploads/**",
+      },
     ],
   },
 };

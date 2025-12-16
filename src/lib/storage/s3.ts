@@ -30,6 +30,7 @@ export async function uploadToS3(file: File): Promise<string> {
       Key: key,
       Body: buffer,
       ContentType: file.type,
+      CacheControl: "public, max-age=31536000, immutable",
     })
   );
 

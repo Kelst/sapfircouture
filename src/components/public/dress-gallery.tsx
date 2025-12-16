@@ -50,7 +50,7 @@ function GalleryImage({
       className={className}
       style={style}
       onError={() => setError(true)}
-      unoptimized
+      unoptimized={src.includes("localhost")}
     />
   );
 }
@@ -154,7 +154,7 @@ export function DressGallery({ images, videos = [], dressName }: DressGalleryPro
         {/* Photo Gallery */}
         {hasImages && (
           <div className="space-y-3 w-full min-[530px]:max-w-[480px] min-[530px]:mx-auto xl:mx-0">
-            {/* Main Image */}
+            {/* Main Image - render all images, show only active via CSS */}
             <div
               ref={mainImageRef}
               className="relative aspect-[4/5] max-h-[600px] w-full bg-pearl overflow-hidden cursor-zoom-in group"
@@ -163,34 +163,44 @@ export function DressGallery({ images, videos = [], dressName }: DressGalleryPro
               onMouseLeave={() => setIsZoomed(false)}
               onMouseMove={handleMouseMove}
             >
-              <GalleryImage
-                src={images[activeImageIndex]}
-                alt={`${dressName} - Image ${activeImageIndex + 1}`}
-                fill
-                priority
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                className={cn(
-                  "object-cover transition-transform duration-300",
-                  isZoomed && "scale-150"
-                )}
-                style={
-                  isZoomed
-                    ? {
-                        transformOrigin: `${mousePosition.x}% ${mousePosition.y}%`,
-                      }
-                    : undefined
-                }
-              />
+              {images.map((image, index) => (
+                <div
+                  key={image}
+                  className={cn(
+                    "absolute inset-0 transition-opacity duration-300",
+                    index === activeImageIndex ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
+                  )}
+                >
+                  <GalleryImage
+                    src={image}
+                    alt={`${dressName} - Image ${index + 1}`}
+                    fill
+                    priority={index === 0}
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                    className={cn(
+                      "object-cover transition-transform duration-300",
+                      isZoomed && index === activeImageIndex && "scale-150"
+                    )}
+                    style={
+                      isZoomed && index === activeImageIndex
+                        ? {
+                            transformOrigin: `${mousePosition.x}% ${mousePosition.y}%`,
+                          }
+                        : undefined
+                    }
+                  />
+                </div>
+              ))}
 
               {/* Zoom Icon */}
-              <div className="absolute bottom-4 right-4 p-2 bg-white/80 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="absolute bottom-4 right-4 p-2 bg-white/80 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-20">
                 <ZoomIn className="w-5 h-5 text-foreground" />
               </div>
             </div>
 
             {/* Image Thumbnails */}
             {images.length > 1 && (
-              <div className="grid grid-cols-5 gap-2">
+              <div className="grid grid-cols-5 gap-2 pl-1">
                 {images.slice(0, 4).map((image, index) => (
                   <button
                     key={index}
@@ -234,7 +244,7 @@ export function DressGallery({ images, videos = [], dressName }: DressGalleryPro
               </h3>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 p-1">
               {videos.map((video, index) => (
                 <button
                   key={index}
@@ -309,33 +319,46 @@ export function DressGallery({ images, videos = [], dressName }: DressGalleryPro
               <div
                 ref={lightboxImageRef}
                 className={cn(
-                  "relative w-full max-w-5xl mx-4 aspect-[3/4] md:aspect-auto md:h-[70vh] overflow-hidden animate-in zoom-in-95 fade-in duration-300",
+                  "relative w-full max-w-5xl mx-4 aspect-[3/4] md:aspect-auto md:h-[70vh] overflow-hidden",
                   lightboxZoomed ? "cursor-zoom-out" : "cursor-zoom-in"
                 )}
                 onClick={(e) => { e.stopPropagation(); setLightboxZoomed(!lightboxZoomed); }}
                 onMouseMove={handleLightboxMouseMove}
               >
-                <GalleryImage
-                  src={images[activeImageIndex]}
-                  alt={`${dressName} - Image ${activeImageIndex + 1}`}
-                  fill
-                  sizes="100vw"
-                  className={cn(
-                    "object-contain transition-all duration-300 ease-out",
-                    lightboxZoomed && "scale-[2.5]"
-                  )}
-                  style={
-                    lightboxZoomed
-                      ? {
-                          transformOrigin: `${lightboxMousePos.x}% ${lightboxMousePos.y}%`,
-                        }
-                      : undefined
-                  }
-                />
+                {images.map((image, index) => (
+                  <div
+                    key={image}
+                    className={cn(
+                      "absolute inset-0 transition-opacity duration-700 ease-in-out",
+                      index === activeImageIndex
+                        ? "opacity-100 z-10"
+                        : "opacity-0 z-0"
+                    )}
+                  >
+                    <GalleryImage
+                      src={image}
+                      alt={`${dressName} - Image ${index + 1}`}
+                      fill
+                      sizes="100vw"
+                      priority={index === activeImageIndex}
+                      className={cn(
+                        "object-contain transition-transform duration-300 ease-out",
+                        lightboxZoomed && index === activeImageIndex && "scale-[2.5]"
+                      )}
+                      style={
+                        lightboxZoomed && index === activeImageIndex
+                          ? {
+                              transformOrigin: `${lightboxMousePos.x}% ${lightboxMousePos.y}%`,
+                            }
+                          : undefined
+                      }
+                    />
+                  </div>
+                ))}
 
                 {/* Zoom hint */}
                 {!lightboxZoomed && (
-                  <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 px-5 py-2.5 bg-foreground/5 backdrop-blur-sm border border-foreground/10 text-foreground/60 text-xs uppercase tracking-wider pointer-events-none">
+                  <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 px-5 py-2.5 bg-foreground/5 backdrop-blur-sm border border-foreground/10 text-foreground/60 text-xs uppercase tracking-wider pointer-events-none z-20">
                     <ZoomIn className="w-3.5 h-3.5" strokeWidth={1.5} />
                     Збільшити
                   </div>
@@ -357,7 +380,10 @@ export function DressGallery({ images, videos = [], dressName }: DressGalleryPro
                   {images.map((image, index) => (
                     <button
                       key={index}
-                      onClick={(e) => { e.stopPropagation(); setActiveImageIndex(index); }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActiveImageIndex(index);
+                      }}
                       className={cn(
                         "relative w-12 h-12 md:w-14 md:h-14 flex-shrink-0 overflow-hidden transition-all duration-300 cursor-pointer shimmer-gold",
                         activeImageIndex === index

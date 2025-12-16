@@ -39,12 +39,13 @@
   "dress": {
     "collection": "Collection",
     "style": "Style",
-    "bookFitting": "Book a Fitting",
+    "bookFitting": "Contact Us",
     "share": "Share",
     "similarDresses": "You May Also Love",
     "description": "Description",
     "notFound": "Dress not found",
-    "backToCatalog": "Back to Catalog"
+    "backToCatalog": "Back to Catalog",
+    "orContactVia": "or message us"
   },
   "about": {
     "title": "About Us",
@@ -57,7 +58,8 @@
     "infoTitle": "Get in Touch",
     "phone": "Phone",
     "email": "Email",
-    "followUs": "Follow Us",
+    "followUs": "Message Us",
+    "followUsDescription": "Contact us through your preferred platform",
     "form": {
       "name": "Your Name",
       "phone": "Phone Number",

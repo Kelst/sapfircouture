@@ -39,12 +39,13 @@
   "dress": {
     "collection": "Колекція",
     "style": "Стиль",
-    "bookFitting": "Записатися на примірку",
+    "bookFitting": "Зв'язатися з нами",
     "share": "Поділитися",
     "similarDresses": "Вам також сподобається",
     "description": "Опис",
     "notFound": "Сукню не знайдено",
-    "backToCatalog": "Повернутися до каталогу"
+    "backToCatalog": "Повернутися до каталогу",
+    "orContactVia": "або напишіть нам"
   },
   "about": {
     "title": "Про нас",
@@ -57,7 +58,8 @@
     "infoTitle": "Контактна інформація",
     "phone": "Телефон",
     "email": "Email",
-    "followUs": "Ми в соцмережах",
+    "followUs": "Напишіть нам",
+    "followUsDescription": "Зв'яжіться з нами зручним для вас способом",
     "form": {
       "name": "Ваше ім'я",
       "phone": "Номер телефону",

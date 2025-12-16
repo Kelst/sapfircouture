@@ -24,12 +24,20 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Check, Loader2 } from "lucide-react";
+import { Check, Loader2, AlertCircle } from "lucide-react";
+import { SocialLinks } from "@/components/public/social-links";
 
 const bookingSchema = z.object({
   name: z.string().min(2, "Name is required"),
-  phone: z.string().min(10, "Valid phone number is required"),
-  email: z.string().email("Valid email is required").optional().or(z.literal("")),
+  phone: z.string()
+    .min(7, "Phone number is too short")
+    .max(20, "Phone number is too long")
+    .regex(/^[+\d\s\-()]+$/, "Invalid phone number format")
+    .refine((val) => {
+      const digitsOnly = val.replace(/\D/g, "");
+      return digitsOnly.length >= 7 && digitsOnly.length <= 15;
+    }, "Phone must have 7-15 digits"),
+  email: z.string().email("Invalid email").optional().or(z.literal("")),
   message: z.string().optional(),
 });
 
@@ -48,6 +56,7 @@ export function BookFittingForm({ dressId, dressName }: BookFittingFormProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const form = useForm<BookingFormData>({
     resolver: zodResolver(bookingSchema),
@@ -61,6 +70,8 @@ export function BookFittingForm({ dressId, dressName }: BookFittingFormProps) {
 
   async function onSubmit(data: BookingFormData) {
     setIsSubmitting(true);
+    setErrorMessage(null);
+
     try {
       const response = await submitContact({
         ...data,
@@ -76,11 +87,25 @@ export function BookFittingForm({ dressId, dressName }: BookFittingFormProps) {
         setTimeout(() => {
           setIsOpen(false);
           setIsSuccess(false);
+          setErrorMessage(null);
           form.reset();
         }, 2000);
+      } else {
+        // Handle specific error codes
+        const errorCode = response.error?.code;
+        if (errorCode === "RATE_LIMIT_EXCEEDED") {
+          setErrorMessage(tCommon("errors.rateLimit"));
+        } else if (errorCode === "DUPLICATE_REQUEST") {
+          setErrorMessage(tCommon("errors.duplicate"));
+        } else if (errorCode === "VALIDATION_ERROR") {
+          setErrorMessage(tCommon("errors.validation"));
+        } else {
+          setErrorMessage(tCommon("error"));
+        }
       }
     } catch (error) {
       console.error("Failed to submit:", error);
+      setErrorMessage(tCommon("error"));
     } finally {
       setIsSubmitting(false);
     }
@@ -193,6 +218,14 @@ export function BookFittingForm({ dressId, dressName }: BookFittingFormProps) {
                 )}
               />
 
+              {/* Error message */}
+              {errorMessage && (
+                <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                  <p>{errorMessage}</p>
+                </div>
+              )}
+
               <button
                 type="submit"
                 disabled={isSubmitting}
@@ -207,6 +240,14 @@ export function BookFittingForm({ dressId, dressName }: BookFittingFormProps) {
                   tForm("submit")
                 )}
               </button>
+
+              {/* Social Links */}
+              <div className="mt-8 pt-6 border-t border-muted/30">
+                <p className="text-xs uppercase tracking-wider text-muted-foreground text-center mb-4">
+                  {t("orContactVia")}
+                </p>
+                <SocialLinks className="justify-center" iconSize="md" />
+              </div>
             </form>
           </Form>
         )}

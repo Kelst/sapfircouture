@@ -29,7 +29,7 @@ export default async function ContactsPage() {
       </section>
 
       {/* Main Content */}
-      <section className="py-16 md:py-24">
+      <section className="pt-8 pb-16 md:pt-12 md:pb-24">
         <div className="container">
           <div className="grid lg:grid-cols-2 gap-16 lg:gap-24">
             {/* Contact Form */}
@@ -129,7 +129,8 @@ export default async function ContactsPage() {
                 {/* Social Links */}
                 {socialLinks.length > 0 && (
                   <div className="pt-8 border-t border-muted/30">
-                    <h3 className="font-medium mb-4">{t("followUs")}</h3>
+                    <h3 className="font-medium mb-2">{t("followUs")}</h3>
+                    <p className="text-sm text-muted-foreground mb-4">{t("followUsDescription")}</p>
                     <SocialLinks links={socialLinks} iconSize="lg" />
                   </div>
                 )}
