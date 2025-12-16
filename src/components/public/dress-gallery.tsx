@@ -3,7 +3,8 @@
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { ChevronLeft, ChevronRight, X, ZoomIn, ZoomOut, Play, ImageOff } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, ZoomIn, Play, ImageOff } from "lucide-react";
+import { VideoPlayer } from "./video-player";
 
 interface DressGalleryProps {
   images: string[];
@@ -195,7 +196,7 @@ export function DressGallery({ images, videos = [], dressName }: DressGalleryPro
                     key={index}
                     onClick={() => setActiveImageIndex(index)}
                     className={cn(
-                      "relative aspect-square overflow-hidden transition-all duration-300",
+                      "relative aspect-square overflow-hidden transition-all duration-300 shimmer-gold",
                       activeImageIndex === index
                         ? "ring-2 ring-gold"
                         : "ring-1 ring-transparent hover:ring-gold/50"
@@ -213,7 +214,7 @@ export function DressGallery({ images, videos = [], dressName }: DressGalleryPro
                 {images.length > 5 && (
                   <button
                     onClick={() => openImageLightbox(5)}
-                    className="relative aspect-square bg-foreground/10 flex items-center justify-center hover:bg-foreground/20 transition-colors"
+                    className="relative aspect-square bg-foreground/10 flex items-center justify-center hover:bg-foreground/20 transition-colors shimmer-gold"
                   >
                     <span className="text-sm font-medium">+{images.length - 5}</span>
                   </button>
@@ -343,7 +344,7 @@ export function DressGallery({ images, videos = [], dressName }: DressGalleryPro
 
               {/* Counter (hidden when zoomed) */}
               {!lightboxZoomed && (
-                <div className="absolute top-6 left-1/2 -translate-x-1/2 font-serif text-sm text-foreground/50 tracking-wider">
+                <div className="absolute top-6 left-1/2 -translate-x-1/2 font-serif text-base text-foreground/50 tracking-wider">
                   <span className="text-foreground">{activeImageIndex + 1}</span>
                   <span className="mx-2">/</span>
                   <span>{images.length}</span>
@@ -358,7 +359,7 @@ export function DressGallery({ images, videos = [], dressName }: DressGalleryPro
                       key={index}
                       onClick={(e) => { e.stopPropagation(); setActiveImageIndex(index); }}
                       className={cn(
-                        "relative w-14 h-14 overflow-hidden transition-all duration-300 cursor-pointer",
+                        "relative w-14 h-14 overflow-hidden transition-all duration-300 cursor-pointer shimmer-gold",
                         activeImageIndex === index
                           ? "ring-2 ring-gold ring-offset-1"
                           : "opacity-60 hover:opacity-100"
@@ -383,23 +384,50 @@ export function DressGallery({ images, videos = [], dressName }: DressGalleryPro
             </>
           ) : (
             <>
+              {/* Video Navigation */}
+              {videos.length > 1 && (
+                <>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveVideoIndex((prev) => (prev === 0 || prev === null ? videos.length - 1 : prev - 1));
+                    }}
+                    className="absolute left-8 top-1/2 -translate-y-1/2 z-10 group p-3 cursor-pointer"
+                  >
+                    <div className="w-12 h-12 flex items-center justify-center border border-foreground/20 rounded-full transition-all duration-300 group-hover:border-gold group-hover:bg-gold/5">
+                      <ChevronLeft className="w-5 h-5 text-foreground/50 transition-colors duration-300 group-hover:text-gold" strokeWidth={1.5} />
+                    </div>
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveVideoIndex((prev) => (prev === null || prev === videos.length - 1 ? 0 : prev + 1));
+                    }}
+                    className="absolute right-8 top-1/2 -translate-y-1/2 z-10 group p-3 cursor-pointer"
+                  >
+                    <div className="w-12 h-12 flex items-center justify-center border border-foreground/20 rounded-full transition-all duration-300 group-hover:border-gold group-hover:bg-gold/5">
+                      <ChevronRight className="w-5 h-5 text-foreground/50 transition-colors duration-300 group-hover:text-gold" strokeWidth={1.5} />
+                    </div>
+                  </button>
+                </>
+              )}
+
               {/* Video Content */}
               <div
-                className="relative w-full max-w-5xl mx-4 animate-in zoom-in-95 fade-in duration-300"
+                className="flex items-center justify-center w-full h-full px-4 animate-in zoom-in-95 fade-in duration-300"
                 onClick={(e) => e.stopPropagation()}
               >
-                <video
+                <VideoPlayer
+                  key={activeVideoIndex}
                   src={videos[activeVideoIndex ?? 0]}
-                  className="w-full max-h-[70vh] bg-black video-no-volume"
-                  controls
+                  className="max-w-4xl"
                   autoPlay
-                  muted
                 />
               </div>
 
               {/* Video Counter */}
               {videos.length > 1 && (
-                <div className="absolute top-6 left-1/2 -translate-x-1/2 font-serif text-sm text-foreground/50 tracking-wider">
+                <div className="absolute top-6 left-1/2 -translate-x-1/2 font-serif text-base text-foreground/50 tracking-wider">
                   <span className="text-foreground">Відео {(activeVideoIndex ?? 0) + 1}</span>
                   <span className="mx-2">/</span>
                   <span>{videos.length}</span>

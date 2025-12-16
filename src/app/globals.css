@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "plyr/dist/plyr.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -507,6 +508,42 @@
     animation: slideIn 0.5s ease-out forwards;
   }
 
+  /* Golden shimmer effect */
+  .shimmer-gold {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .shimmer-gold::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      120deg,
+      transparent 0%,
+      transparent 40%,
+      rgba(184, 155, 94, 0.15) 50%,
+      transparent 60%,
+      transparent 100%
+    );
+    transform: translateX(-100%);
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .shimmer-gold:hover::after {
+    animation: shimmerGold 0.6s ease-out forwards;
+  }
+
+  @keyframes shimmerGold {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(100%);
+    }
+  }
+
   /* Lightbox animations */
   .animate-in {
     animation-duration: 300ms;
@@ -544,6 +581,110 @@
 .stagger-3 { animation-delay: 0.3s; }
 .stagger-4 { animation-delay: 0.4s; }
 .stagger-5 { animation-delay: 0.5s; }
+
+/* ═══════════════════════════════════════════════════════════════
+   PLYR VIDEO PLAYER - Custom Styling
+   ═══════════════════════════════════════════════════════════════ */
+
+.plyr-wrapper {
+  --plyr-color-main: var(--gold);
+  --plyr-video-control-color: #fff;
+  --plyr-video-control-color-hover: var(--gold);
+  --plyr-video-control-background-hover: transparent;
+  --plyr-range-fill-background: var(--gold);
+  --plyr-range-thumb-background: #fff;
+  --plyr-range-thumb-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --plyr-range-track-height: 4px;
+  --plyr-range-thumb-height: 14px;
+  --plyr-control-spacing: 12px;
+  --plyr-font-family: var(--font-serif);
+  max-width: 100%;
+  max-height: 70vh;
+}
+
+.plyr-wrapper .plyr,
+.plyr-wrapper .plyr__video-wrapper,
+.plyr-wrapper video {
+  max-height: 70vh;
+}
+
+/* Fullscreen mode - remove constraints */
+.plyr-wrapper .plyr--fullscreen-active,
+.plyr-wrapper .plyr--fullscreen-active .plyr__video-wrapper,
+.plyr-wrapper .plyr--fullscreen-active video {
+  max-height: none;
+  max-width: none;
+  width: 100%;
+  height: 100%;
+}
+
+.plyr--fullscreen-active video {
+  object-fit: contain;
+}
+
+.plyr-wrapper .plyr {
+  --plyr-video-background: #000;
+}
+
+.plyr-wrapper .plyr__video-wrapper {
+  background: #000;
+}
+
+.plyr-wrapper .plyr__control--overlaid {
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--gold);
+  padding: 20px;
+  border-radius: 50%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.plyr-wrapper .plyr__control--overlaid:hover {
+  background: #fff;
+}
+
+.plyr-wrapper .plyr__control--overlaid svg {
+  fill: var(--gold);
+  width: 24px;
+  height: 24px;
+}
+
+.plyr-wrapper .plyr__controls {
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+  padding: 40px 16px 16px;
+}
+
+.plyr-wrapper .plyr__time {
+  font-family: var(--font-serif);
+  font-size: 13px;
+  letter-spacing: 0.05em;
+}
+
+.plyr-wrapper .plyr__progress__buffer {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.plyr-wrapper .plyr--full-ui input[type="range"] {
+  color: var(--gold);
+}
+
+.plyr-wrapper .plyr__control:hover {
+  background: transparent;
+  color: var(--gold);
+}
+
+.plyr-wrapper .plyr__control svg {
+  transition: transform 0.2s ease;
+}
+
+.plyr-wrapper .plyr__control:hover svg {
+  transform: scale(1.1);
+}
+
+/* Hide volume controls */
+.plyr-wrapper .plyr__volume,
+.plyr-wrapper .plyr__control[data-plyr="mute"] {
+  display: none !important;
+}
 
 /* ═══════════════════════════════════════════════════════════════
    COMPONENT STYLES
