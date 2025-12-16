@@ -53,7 +53,7 @@ export default async function DressPage({ params }: DressPageProps) {
   const filteredSimilar = similarDresses.filter((d) => d.id !== dress.id);
 
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-white overflow-x-hidden">
       {/* Breadcrumb */}
       <div className="bg-ivory py-4">
         <div className="container">
@@ -70,9 +70,9 @@ export default async function DressPage({ params }: DressPageProps) {
       {/* Main Content */}
       <section className="py-8 md:py-16">
         <div className="container">
-          <div className="grid lg:grid-cols-2 gap-8 lg:gap-16">
+          <div className="grid xl:grid-cols-2 gap-8 xl:gap-16">
             {/* Gallery */}
-            <div>
+            <div className="min-w-0 overflow-hidden">
               <DressGallery
                 images={dress.images}
                 videos={dress.videos}
@@ -81,7 +81,7 @@ export default async function DressPage({ params }: DressPageProps) {
             </div>
 
             {/* Details */}
-            <div className="lg:sticky lg:top-28 lg:self-start">
+            <div className="xl:sticky xl:top-28 xl:self-start">
               <div className="space-y-6">
                 {/* Collection Badge */}
                 {dress.collection && (

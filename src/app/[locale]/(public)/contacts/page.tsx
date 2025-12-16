@@ -16,7 +16,7 @@ export default async function ContactsPage() {
   return (
     <main className="min-h-screen bg-white">
       {/* Page Header */}
-      <section className="relative bg-ivory py-20 md:py-28">
+      <section className="relative bg-ivory pt-20 pb-10 md:pt-28 md:pb-14">
         <div className="container text-center">
           <h1 className="font-serif text-h1 font-light tracking-wide text-foreground mb-4">
             {t("title")}

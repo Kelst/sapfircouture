@@ -17,9 +17,9 @@
   "home": {
     "featuredCollections": "Featured Collections",
     "viewAllCollections": "View All Collections",
-    "ctaTitle": "Book Your Fitting",
-    "ctaSubtitle": "Experience the magic of finding your perfect dress with a personalized consultation",
-    "ctaButton": "Schedule Appointment"
+    "ctaTitle": "Find Your Dream Dress",
+    "ctaSubtitle": "Get in touch for a personalized consultation",
+    "ctaButton": "Contact Us"
   },
   "catalog": {
     "title": "Our Collection",
@@ -66,7 +66,12 @@
       "submit": "Send Message"
     },
     "success": "Thank you! We will contact you soon.",
-    "error": "Something went wrong. Please try again."
+    "error": "Something went wrong. Please try again.",
+    "errors": {
+      "rateLimit": "Too many requests. Please wait a few minutes and try again.",
+      "duplicate": "You have already submitted a request. We will contact you soon.",
+      "validation": "Please check your input and try again."
+    }
   },
   "admin": {
     "dashboard": "Dashboard",

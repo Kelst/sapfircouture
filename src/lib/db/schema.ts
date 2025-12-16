@@ -134,6 +134,9 @@ export const contactRequests = pgTable("contact_requests", {
   message: text("message"),
   dressId: uuid("dress_id").references(() => dresses.id, { onDelete: "set null" }),
   isProcessed: boolean("is_processed").notNull().default(false),
+  // Anti-spam fields
+  ipAddress: varchar("ip_address", { length: 45 }), // IPv6 max length
+  userAgent: text("user_agent"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 

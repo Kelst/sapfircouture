@@ -90,7 +90,12 @@ export function HeroSection({ slides: initialSlides }: HeroSectionProps) {
   }
 
   return (
-    <section className="relative h-screen overflow-hidden -mt-20">
+    <section
+      className={cn(
+        "relative h-screen overflow-hidden -mt-20 transition-opacity duration-500",
+        imageLoaded ? "opacity-100" : "opacity-0"
+      )}
+    >
       {/* Slides */}
       {slides.map((slide, index) => {
         const title = getHeroSlideText(slide, "title", locale);

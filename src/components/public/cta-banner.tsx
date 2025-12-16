@@ -59,20 +59,20 @@ export function CtaBanner({ content: initialContent }: CtaBannerProps) {
 
   return (
     <section ref={sectionRef} className="relative py-24 md:py-32 overflow-hidden">
-      {/* Background Image */}
+      {/* Background */}
       {ctaImage ? (
         <>
           <Image
             src={ctaImage}
-            alt="Book a fitting"
+            alt="Contact us"
             fill
             sizes="100vw"
             className="object-cover"
           />
-          <div className="absolute inset-0 bg-black/50" />
+          <div className="absolute inset-0 bg-white/60" />
         </>
       ) : (
-        <div className="absolute inset-0 bg-gradient-to-r from-charcoal to-foreground" />
+        <div className="absolute inset-0 bg-pearl" />
       )}
 
       {/* Content */}
@@ -80,7 +80,7 @@ export function CtaBanner({ content: initialContent }: CtaBannerProps) {
         <div className="max-w-2xl mx-auto text-center">
           <h2
             className={cn(
-              "font-serif text-h2 font-light tracking-wide text-white mb-6",
+              "font-serif text-h2 font-light tracking-wide text-charcoal mb-6",
               "transition-all duration-700 ease-out-expo",
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             )}
@@ -90,7 +90,7 @@ export function CtaBanner({ content: initialContent }: CtaBannerProps) {
 
           <p
             className={cn(
-              "text-white/70 text-lg mb-8 max-w-lg mx-auto",
+              "text-gray text-lg mb-8 max-w-lg mx-auto",
               "transition-all duration-700 ease-out-expo",
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             )}
@@ -114,8 +114,8 @@ export function CtaBanner({ content: initialContent }: CtaBannerProps) {
       </div>
 
       {/* Decorative Elements */}
-      <div className="absolute top-8 left-8 w-24 h-24 border border-gold/20 pointer-events-none hidden md:block" />
-      <div className="absolute bottom-8 right-8 w-24 h-24 border border-gold/20 pointer-events-none hidden md:block" />
+      <div className="absolute top-8 left-8 w-24 h-24 border border-gold/40 pointer-events-none hidden md:block" />
+      <div className="absolute bottom-8 right-8 w-24 h-24 border border-gold/40 pointer-events-none hidden md:block" />
     </section>
   );
 }

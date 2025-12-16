@@ -248,13 +248,40 @@
     font-family: var(--font-sans);
   }
 
-  /* Interactive elements */
+  /* Interactive elements - cursor pointer for all clickable items */
   button,
   [role="button"],
   [type="button"],
   [type="submit"],
   [type="reset"],
-  a {
+  a,
+  select,
+  summary,
+  label,
+  input[type="checkbox"],
+  input[type="radio"],
+  input[type="file"],
+  input[type="image"],
+  input[type="color"],
+  input[type="range"],
+  [tabindex]:not([tabindex="-1"]),
+  [onclick],
+  [data-state],
+  [data-radix-collection-item],
+  [role="tab"],
+  [role="menuitem"],
+  [role="menuitemcheckbox"],
+  [role="menuitemradio"],
+  [role="option"],
+  [role="switch"],
+  [role="checkbox"],
+  [role="radio"],
+  [role="slider"],
+  [role="link"],
+  [role="treeitem"],
+  [role="listbox"],
+  [role="combobox"],
+  .cursor-pointer {
     cursor: pointer;
   }
 

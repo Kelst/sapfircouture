@@ -17,13 +17,15 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Check, Loader2 } from "lucide-react";
+import { Check, Loader2, AlertCircle } from "lucide-react";
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name is required"),
   phone: z.string().min(10, "Valid phone number is required"),
   email: z.string().email("Valid email is required").optional().or(z.literal("")),
   message: z.string().optional(),
+  // Honeypot - should always be empty
+  website: z.string().max(0).optional(),
 });
 
 type ContactFormData = z.infer<typeof contactSchema>;
@@ -38,6 +40,7 @@ export function ContactForm({ dressId }: ContactFormProps) {
   const locale = useLocale();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const form = useForm<ContactFormData>({
     resolver: zodResolver(contactSchema),
@@ -46,11 +49,14 @@ export function ContactForm({ dressId }: ContactFormProps) {
       phone: "",
       email: "",
       message: "",
+      website: "", // Honeypot
     },
   });
 
   async function onSubmit(data: ContactFormData) {
     setIsSubmitting(true);
+    setErrorMessage(null);
+
     try {
       const response = await submitContact({
         ...data,
@@ -61,9 +67,22 @@ export function ContactForm({ dressId }: ContactFormProps) {
       if (response.success) {
         setIsSuccess(true);
         form.reset();
+      } else {
+        // Handle specific error codes
+        const errorCode = response.error?.code;
+        if (errorCode === "RATE_LIMIT_EXCEEDED") {
+          setErrorMessage(tCommon("errors.rateLimit"));
+        } else if (errorCode === "DUPLICATE_REQUEST") {
+          setErrorMessage(tCommon("errors.duplicate"));
+        } else if (errorCode === "VALIDATION_ERROR") {
+          setErrorMessage(tCommon("errors.validation"));
+        } else {
+          setErrorMessage(tCommon("error"));
+        }
       }
     } catch (error) {
       console.error("Failed to submit:", error);
+      setErrorMessage(tCommon("error"));
     } finally {
       setIsSubmitting(false);
     }
@@ -92,6 +111,18 @@ export function ContactForm({ dressId }: ContactFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        {/* Honeypot field - hidden from users, bots will fill it */}
+        <div className="absolute -left-[9999px] opacity-0" aria-hidden="true">
+          <label htmlFor="website">Website</label>
+          <input
+            type="text"
+            id="website"
+            tabIndex={-1}
+            autoComplete="off"
+            {...form.register("website")}
+          />
+        </div>
+
         <FormField
           control={form.control}
           name="name"
@@ -186,6 +217,14 @@ export function ContactForm({ dressId }: ContactFormProps) {
             </FormItem>
           )}
         />
+
+        {/* Error message */}
+        {errorMessage && (
+          <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+            <AlertCircle className="w-5 h-5 flex-shrink-0" />
+            <p className="text-sm">{errorMessage}</p>
+          </div>
+        )}
 
         <button
           type="submit"

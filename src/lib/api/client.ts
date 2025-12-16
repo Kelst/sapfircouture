@@ -159,7 +159,10 @@ export async function getContent(): Promise<Content> {
 export interface ContactResponse {
   success: boolean;
   id?: string;
-  error?: string;
+  error?: {
+    message: string;
+    code?: string;
+  };
 }
 
 export async function submitContact(
@@ -176,7 +179,10 @@ export async function submitContact(
 
   return {
     success: false,
-    error: response.error?.message ?? "Failed to submit contact form",
+    error: {
+      message: response.error?.message ?? "Failed to submit contact form",
+      code: response.error?.code,
+    },
   };
 }
 

@@ -150,14 +150,14 @@ export function DressGallery({ images, videos = [], dressName }: DressGalleryPro
 
   return (
     <>
-      <div className="space-y-6">
+      <div className="space-y-6 w-full max-w-full">
         {/* Photo Gallery */}
         {hasImages && (
-          <div className="space-y-3">
+          <div className="space-y-3 w-full min-[530px]:max-w-[480px] min-[530px]:mx-auto xl:mx-0">
             {/* Main Image */}
             <div
               ref={mainImageRef}
-              className="relative aspect-[4/5] max-h-[600px] bg-pearl overflow-hidden cursor-zoom-in group"
+              className="relative aspect-[4/5] max-h-[600px] w-full bg-pearl overflow-hidden cursor-zoom-in group"
               onClick={() => openImageLightbox(activeImageIndex)}
               onMouseEnter={() => setIsZoomed(true)}
               onMouseLeave={() => setIsZoomed(false)}
@@ -191,7 +191,7 @@ export function DressGallery({ images, videos = [], dressName }: DressGalleryPro
             {/* Image Thumbnails */}
             {images.length > 1 && (
               <div className="grid grid-cols-5 gap-2">
-                {images.slice(0, 5).map((image, index) => (
+                {images.slice(0, 4).map((image, index) => (
                   <button
                     key={index}
                     onClick={() => setActiveImageIndex(index)}
@@ -206,17 +206,17 @@ export function DressGallery({ images, videos = [], dressName }: DressGalleryPro
                       src={image}
                       alt={`${dressName} - Thumbnail ${index + 1}`}
                       fill
-                      sizes="100px"
+                      sizes="80px"
                       className="object-cover"
                     />
                   </button>
                 ))}
-                {images.length > 5 && (
+                {images.length > 4 && (
                   <button
-                    onClick={() => openImageLightbox(5)}
-                    className="relative aspect-square bg-foreground/10 flex items-center justify-center hover:bg-foreground/20 transition-colors shimmer-gold"
+                    onClick={() => openImageLightbox(4)}
+                    className="relative aspect-square bg-foreground/5 flex items-center justify-center hover:bg-foreground/10 transition-colors"
                   >
-                    <span className="text-sm font-medium">+{images.length - 5}</span>
+                    <span className="text-sm font-medium text-foreground/70">+{images.length - 4}</span>
                   </button>
                 )}
               </div>
@@ -353,13 +353,13 @@ export function DressGallery({ images, videos = [], dressName }: DressGalleryPro
 
               {/* Thumbnail Strip (hidden when zoomed) */}
               {images.length > 1 && !lightboxZoomed && (
-                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 p-2 bg-white/80 backdrop-blur-sm border border-foreground/5">
-                  {images.slice(0, 8).map((image, index) => (
+                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 p-2 bg-white/80 backdrop-blur-sm border border-foreground/5 max-w-[90vw] overflow-x-auto">
+                  {images.map((image, index) => (
                     <button
                       key={index}
                       onClick={(e) => { e.stopPropagation(); setActiveImageIndex(index); }}
                       className={cn(
-                        "relative w-14 h-14 overflow-hidden transition-all duration-300 cursor-pointer shimmer-gold",
+                        "relative w-12 h-12 md:w-14 md:h-14 flex-shrink-0 overflow-hidden transition-all duration-300 cursor-pointer shimmer-gold",
                         activeImageIndex === index
                           ? "ring-2 ring-gold ring-offset-1"
                           : "opacity-60 hover:opacity-100"
@@ -374,11 +374,6 @@ export function DressGallery({ images, videos = [], dressName }: DressGalleryPro
                       />
                     </button>
                   ))}
-                  {images.length > 8 && (
-                    <div className="w-14 h-14 flex items-center justify-center bg-foreground/5 text-foreground/50 text-xs">
-                      +{images.length - 8}
-                    </div>
-                  )}
                 </div>
               )}
             </>
