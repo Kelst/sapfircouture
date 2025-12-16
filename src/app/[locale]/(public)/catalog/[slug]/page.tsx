@@ -8,6 +8,7 @@ import { ShareButton } from "./share-button";
 import { getDressServer, getDressesServer } from "@/lib/api/client";
 import { getStyleName, type Locale } from "@/types/api";
 import { ChevronLeft } from "lucide-react";
+import { trackDressView } from "@/actions/views.actions";
 import type { Metadata } from "next";
 
 interface DressPageProps {
@@ -42,6 +43,9 @@ export default async function DressPage({ params }: DressPageProps) {
   if (!dress) {
     notFound();
   }
+
+  // Track view (fire-and-forget, doesn't block rendering)
+  void trackDressView(dress.id);
 
   // Fetch similar dresses (same collection or style)
   const { dresses: similarDresses } = await getDressesServer({

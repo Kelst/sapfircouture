@@ -7,6 +7,7 @@ import {
   jsonb,
   uuid,
   varchar,
+  index,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
@@ -108,6 +109,7 @@ export const dresses = pgTable("dresses", {
   videos: jsonb("videos").$type<string[]>().notNull().default([]), // Optional presentation videos (max 3)
   isPublished: boolean("is_published").notNull().default(false),
   order: integer("order").notNull().default(0),
+  viewCount: integer("view_count").notNull().default(0), // Statistics: total views
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
@@ -150,6 +152,26 @@ export const socialLinks = pgTable("social_links", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
+// Statistics: dress views tracking
+export const dressViews = pgTable(
+  "dress_views",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    dressId: uuid("dress_id")
+      .notNull()
+      .references(() => dresses.id, { onDelete: "cascade" }),
+    visitorHash: varchar("visitor_hash", { length: 64 }), // SHA-256 hash of IP+UserAgent
+    ipAddress: varchar("ip_address", { length: 45 }), // IPv6 support
+    locale: varchar("locale", { length: 5 }), // en/uk
+    viewedAt: timestamp("viewed_at").notNull().defaultNow(),
+  },
+  (table) => [
+    index("dress_views_dress_id_idx").on(table.dressId),
+    index("dress_views_viewed_at_idx").on(table.viewedAt),
+    index("dress_views_visitor_hash_idx").on(table.visitorHash),
+  ]
+);
+
 // Relations
 export const collectionsRelations = relations(collections, ({ many }) => ({
   dresses: many(dresses),
@@ -159,7 +181,7 @@ export const stylesRelations = relations(styles, ({ many }) => ({
   dresses: many(dresses),
 }));
 
-export const dressesRelations = relations(dresses, ({ one }) => ({
+export const dressesRelations = relations(dresses, ({ one, many }) => ({
   collection: one(collections, {
     fields: [dresses.collectionId],
     references: [collections.id],
@@ -167,6 +189,14 @@ export const dressesRelations = relations(dresses, ({ one }) => ({
   style: one(styles, {
     fields: [dresses.styleId],
     references: [styles.id],
+  }),
+  views: many(dressViews),
+}));
+
+export const dressViewsRelations = relations(dressViews, ({ one }) => ({
+  dress: one(dresses, {
+    fields: [dressViews.dressId],
+    references: [dresses.id],
   }),
 }));
 
@@ -189,3 +219,5 @@ export type SocialLink = typeof socialLinks.$inferSelect;
 export type NewSocialLink = typeof socialLinks.$inferInsert;
 export type HeroSlide = typeof heroSlides.$inferSelect;
 export type NewHeroSlide = typeof heroSlides.$inferInsert;
+export type DressView = typeof dressViews.$inferSelect;
+export type NewDressView = typeof dressViews.$inferInsert;

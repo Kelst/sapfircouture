@@ -1,15 +1,5 @@
 services:
-  app:
-    build: .
-    container_name: wedding-app
-    restart: unless-stopped
-    env_file: .env
-    depends_on:
-      - postgres
-      - minio
-    networks:
-      - wedding
-
+  # PostgreSQL Database
   postgres:
     image: postgres:16-alpine
     container_name: wedding-db
@@ -20,9 +10,15 @@ services:
       POSTGRES_DB: wedding_salon
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wedding -d wedding_salon"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     networks:
       - wedding
 
+  # MinIO S3-compatible storage
   minio:
     image: minio/minio:latest
     container_name: wedding-minio
@@ -33,9 +29,75 @@ services:
     volumes:
       - minio_data:/data
     command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     networks:
       - wedding
 
+  # MinIO initialization (create bucket)
+  minio-init:
+    image: minio/mc:latest
+    container_name: wedding-minio-init
+    depends_on:
+      minio:
+        condition: service_healthy
+    environment:
+      MINIO_USER: ${MINIO_USER}
+      MINIO_PASSWORD: ${MINIO_PASSWORD}
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set myminio http://minio:9000 $${MINIO_USER} $${MINIO_PASSWORD};
+      mc mb myminio/wedding-uploads --ignore-existing;
+      mc anonymous set download myminio/wedding-uploads;
+      echo 'MinIO bucket created successfully';
+      "
+    networks:
+      - wedding
+
+  # Database migrations (runs SQL files directly for reliability)
+  migrate:
+    image: postgres:16-alpine
+    container_name: wedding-migrate
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PGHOST: postgres
+      PGUSER: wedding
+      PGPASSWORD: ${DB_PASSWORD}
+      PGDATABASE: wedding_salon
+    volumes:
+      - ./drizzle:/drizzle:ro
+      - ./docker/migrate.sh:/migrate.sh:ro
+    entrypoint: ["/bin/sh", "/migrate.sh"]
+    networks:
+      - wedding
+
+  # Next.js Application
+  app:
+    build: .
+    container_name: wedding-app
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+      minio-init:
+        condition: service_completed_successfully
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://wedding:${DB_PASSWORD}@postgres:5432/wedding_salon
+      S3_ENDPOINT: http://minio:9000
+    networks:
+      - wedding
+
+  # Caddy reverse proxy with automatic SSL
   caddy:
     image: caddy:2-alpine
     container_name: wedding-caddy
@@ -43,11 +105,29 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
+      - caddy_config:/config
     depends_on:
-      - app
+      app:
+        condition: service_healthy
+    networks:
+      - wedding
+
+  # Cron job for cleanup
+  cron:
+    build: ./docker/cron
+    container_name: wedding-cron
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_healthy
+    environment:
+      APP_URL: http://app:3000
+      CRON_SECRET: ${CRON_SECRET:-}
     networks:
       - wedding
 
@@ -55,6 +135,8 @@ volumes:
   postgres_data:
   minio_data:
   caddy_data:
+  caddy_config:
 
 networks:
   wedding:
+    driver: bridge

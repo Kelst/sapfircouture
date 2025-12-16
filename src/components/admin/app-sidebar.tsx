@@ -14,6 +14,7 @@ import {
   Share2,
   Settings,
   Image,
+  BarChart3,
 } from "lucide-react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -72,6 +73,12 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
     .slice(0, 2);
 
   const navItems = [
+    {
+      title: "Statistics",
+      url: "/admin/statistics",
+      icon: BarChart3,
+      isActive: pathname.includes("/admin/statistics"),
+    },
     {
       title: "Hero Slides",
       url: "/admin/hero-slides",
