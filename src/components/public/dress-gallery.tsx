@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { ChevronLeft, ChevronRight, X, ZoomIn, Play, ImageOff } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, ZoomIn, ZoomOut, Play, ImageOff } from "lucide-react";
 
 interface DressGalleryProps {
   images: string[];
@@ -55,23 +55,36 @@ function GalleryImage({
 }
 
 export function DressGallery({ images, videos = [], dressName }: DressGalleryProps) {
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [activeVideoIndex, setActiveVideoIndex] = useState<number | null>(null);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [lightboxType, setLightboxType] = useState<"image" | "video">("image");
   const [isZoomed, setIsZoomed] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 50, y: 50 });
+  const [lightboxZoomed, setLightboxZoomed] = useState(false);
+  const [lightboxMousePos, setLightboxMousePos] = useState({ x: 50, y: 50 });
   const mainImageRef = useRef<HTMLDivElement>(null);
+  const lightboxImageRef = useRef<HTMLDivElement>(null);
 
-  const allMedia = [...images, ...videos];
-  const isVideo = (index: number) => index >= images.length;
+  const hasVideos = videos.length > 0;
+  const hasImages = images.length > 0;
 
   // Handle keyboard navigation
   useEffect(() => {
     if (!isLightboxOpen) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setIsLightboxOpen(false);
-      if (e.key === "ArrowLeft") handlePrev();
-      if (e.key === "ArrowRight") handleNext();
+      if (e.key === "Escape") {
+        if (lightboxZoomed) {
+          setLightboxZoomed(false);
+        } else {
+          setIsLightboxOpen(false);
+        }
+      }
+      if (lightboxType === "image" && !lightboxZoomed) {
+        if (e.key === "ArrowLeft") handlePrevImage();
+        if (e.key === "ArrowRight") handleNextImage();
+      }
     };
 
     window.addEventListener("keydown", handleKeyDown);
@@ -81,14 +94,19 @@ export function DressGallery({ images, videos = [], dressName }: DressGalleryPro
       window.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = "";
     };
-  }, [isLightboxOpen, activeIndex]);
+  }, [isLightboxOpen, activeImageIndex, lightboxType, lightboxZoomed]);
 
-  const handlePrev = () => {
-    setActiveIndex((prev) => (prev === 0 ? allMedia.length - 1 : prev - 1));
+  // Reset lightbox zoom when changing images
+  useEffect(() => {
+    setLightboxZoomed(false);
+  }, [activeImageIndex]);
+
+  const handlePrevImage = () => {
+    setActiveImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
   };
 
-  const handleNext = () => {
-    setActiveIndex((prev) => (prev === allMedia.length - 1 ? 0 : prev + 1));
+  const handleNextImage = () => {
+    setActiveImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -100,9 +118,30 @@ export function DressGallery({ images, videos = [], dressName }: DressGalleryPro
     setMousePosition({ x, y });
   };
 
-  if (allMedia.length === 0) {
+  const handleLightboxMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!lightboxImageRef.current || !lightboxZoomed) return;
+
+    const rect = lightboxImageRef.current.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    setLightboxMousePos({ x, y });
+  };
+
+  const openImageLightbox = (index: number) => {
+    setActiveImageIndex(index);
+    setLightboxType("image");
+    setIsLightboxOpen(true);
+  };
+
+  const openVideoLightbox = (index: number) => {
+    setActiveVideoIndex(index);
+    setLightboxType("video");
+    setIsLightboxOpen(true);
+  };
+
+  if (!hasImages && !hasVideos) {
     return (
-      <div className="aspect-[3/4] bg-pearl flex items-center justify-center">
+      <div className="aspect-[4/5] bg-pearl flex items-center justify-center">
         <p className="text-muted-foreground">No images available</p>
       </div>
     );
@@ -110,158 +149,263 @@ export function DressGallery({ images, videos = [], dressName }: DressGalleryPro
 
   return (
     <>
-      <div className="space-y-4">
-        {/* Main Image */}
-        <div
-          ref={mainImageRef}
-          className="relative aspect-[4/5] max-h-[600px] bg-pearl overflow-hidden cursor-zoom-in"
-          onClick={() => setIsLightboxOpen(true)}
-          onMouseEnter={() => setIsZoomed(true)}
-          onMouseLeave={() => setIsZoomed(false)}
-          onMouseMove={handleMouseMove}
-        >
-          {!isVideo(activeIndex) ? (
-            <GalleryImage
-              src={allMedia[activeIndex]}
-              alt={`${dressName} - Image ${activeIndex + 1}`}
-              fill
-              priority
-              sizes="(max-width: 1024px) 100vw, 50vw"
-              className={cn(
-                "object-cover transition-transform duration-300",
-                isZoomed && "scale-150"
-              )}
-              style={
-                isZoomed
-                  ? {
-                      transformOrigin: `${mousePosition.x}% ${mousePosition.y}%`,
-                    }
-                  : undefined
-              }
-            />
-          ) : (
-            <video
-              src={allMedia[activeIndex]}
-              className="w-full h-full object-cover"
-              controls
-            />
-          )}
-
-          {/* Zoom Icon */}
-          <div className="absolute bottom-4 right-4 p-2 bg-white/80 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-            <ZoomIn className="w-5 h-5 text-foreground" />
-          </div>
-        </div>
-
-        {/* Thumbnails */}
-        {allMedia.length > 1 && (
-          <div className="grid grid-cols-5 gap-2">
-            {allMedia.slice(0, 5).map((media, index) => (
-              <button
-                key={index}
-                onClick={() => setActiveIndex(index)}
+      <div className="space-y-6">
+        {/* Photo Gallery */}
+        {hasImages && (
+          <div className="space-y-3">
+            {/* Main Image */}
+            <div
+              ref={mainImageRef}
+              className="relative aspect-[4/5] max-h-[600px] bg-pearl overflow-hidden cursor-zoom-in group"
+              onClick={() => openImageLightbox(activeImageIndex)}
+              onMouseEnter={() => setIsZoomed(true)}
+              onMouseLeave={() => setIsZoomed(false)}
+              onMouseMove={handleMouseMove}
+            >
+              <GalleryImage
+                src={images[activeImageIndex]}
+                alt={`${dressName} - Image ${activeImageIndex + 1}`}
+                fill
+                priority
+                sizes="(max-width: 1024px) 100vw, 50vw"
                 className={cn(
-                  "relative aspect-square overflow-hidden transition-all duration-300",
-                  activeIndex === index
-                    ? "ring-2 ring-gold"
-                    : "ring-1 ring-transparent hover:ring-gold/50"
+                  "object-cover transition-transform duration-300",
+                  isZoomed && "scale-150"
                 )}
-              >
-                {!isVideo(index) ? (
-                  <GalleryImage
-                    src={media}
-                    alt={`${dressName} - Thumbnail ${index + 1}`}
-                    fill
-                    sizes="100px"
-                    className="object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-charcoal flex items-center justify-center">
-                    <Play className="w-6 h-6 text-white" />
-                  </div>
+                style={
+                  isZoomed
+                    ? {
+                        transformOrigin: `${mousePosition.x}% ${mousePosition.y}%`,
+                      }
+                    : undefined
+                }
+              />
+
+              {/* Zoom Icon */}
+              <div className="absolute bottom-4 right-4 p-2 bg-white/80 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                <ZoomIn className="w-5 h-5 text-foreground" />
+              </div>
+            </div>
+
+            {/* Image Thumbnails */}
+            {images.length > 1 && (
+              <div className="grid grid-cols-5 gap-2">
+                {images.slice(0, 5).map((image, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setActiveImageIndex(index)}
+                    className={cn(
+                      "relative aspect-square overflow-hidden transition-all duration-300",
+                      activeImageIndex === index
+                        ? "ring-2 ring-gold"
+                        : "ring-1 ring-transparent hover:ring-gold/50"
+                    )}
+                  >
+                    <GalleryImage
+                      src={image}
+                      alt={`${dressName} - Thumbnail ${index + 1}`}
+                      fill
+                      sizes="100px"
+                      className="object-cover"
+                    />
+                  </button>
+                ))}
+                {images.length > 5 && (
+                  <button
+                    onClick={() => openImageLightbox(5)}
+                    className="relative aspect-square bg-foreground/10 flex items-center justify-center hover:bg-foreground/20 transition-colors"
+                  >
+                    <span className="text-sm font-medium">+{images.length - 5}</span>
+                  </button>
                 )}
-              </button>
-            ))}
-            {allMedia.length > 5 && (
-              <button
-                onClick={() => setIsLightboxOpen(true)}
-                className="relative aspect-square bg-foreground/10 flex items-center justify-center"
-              >
-                <span className="text-sm font-medium">+{allMedia.length - 5}</span>
-              </button>
+              </div>
             )}
+          </div>
+        )}
+
+        {/* Video Section */}
+        {hasVideos && (
+          <div className="space-y-3 pt-4 border-t border-muted/30">
+            <div className="flex items-center gap-2">
+              <Play className="w-5 h-5 text-gold" />
+              <h3 className="font-serif text-lg">
+                Відео ({videos.length})
+              </h3>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {videos.map((video, index) => (
+                <button
+                  key={index}
+                  onClick={() => openVideoLightbox(index)}
+                  className="relative aspect-video bg-charcoal rounded-sm overflow-hidden group hover:ring-2 hover:ring-gold transition-all"
+                >
+                  {/* Video preview or placeholder */}
+                  <video
+                    src={video}
+                    className="w-full h-full object-cover"
+                    muted
+                    preload="metadata"
+                  />
+
+                  {/* Play overlay */}
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/30 transition-colors">
+                    <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <Play className="w-5 h-5 text-foreground ml-0.5" fill="currentColor" />
+                    </div>
+                  </div>
+
+                  {/* Video number */}
+                  <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-black/60 rounded text-xs text-white">
+                    {index + 1}
+                  </div>
+                </button>
+              ))}
+            </div>
           </div>
         )}
       </div>
 
       {/* Lightbox */}
       {isLightboxOpen && (
-        <div className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center">
+        <div
+          className="fixed inset-0 z-50 bg-white/[0.98] backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-300"
+          onClick={() => { if (!lightboxZoomed) { setIsLightboxOpen(false); } }}
+        >
           {/* Close Button */}
           <button
-            onClick={() => setIsLightboxOpen(false)}
-            className="absolute top-4 right-4 z-10 p-2 text-white/70 hover:text-white transition-colors"
+            onClick={(e) => { e.stopPropagation(); setLightboxZoomed(false); setIsLightboxOpen(false); }}
+            className="absolute top-6 right-6 z-20 p-2 text-foreground/40 hover:text-gold transition-colors duration-300 cursor-pointer"
           >
-            <X className="w-8 h-8" />
+            <X className="w-6 h-6" strokeWidth={1.5} />
           </button>
 
-          {/* Navigation */}
-          {allMedia.length > 1 && (
+          {lightboxType === "image" ? (
             <>
-              <button
-                onClick={handlePrev}
-                className="absolute left-4 top-1/2 -translate-y-1/2 z-10 p-2 text-white/70 hover:text-white transition-colors"
+              {/* Navigation for images (hidden when zoomed) */}
+              {images.length > 1 && !lightboxZoomed && (
+                <>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handlePrevImage(); }}
+                    className="absolute left-8 top-1/2 -translate-y-1/2 z-10 group p-3 cursor-pointer"
+                  >
+                    <div className="w-12 h-12 flex items-center justify-center border border-foreground/20 rounded-full transition-all duration-300 group-hover:border-gold group-hover:bg-gold/5">
+                      <ChevronLeft className="w-5 h-5 text-foreground/50 transition-colors duration-300 group-hover:text-gold" strokeWidth={1.5} />
+                    </div>
+                  </button>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleNextImage(); }}
+                    className="absolute right-8 top-1/2 -translate-y-1/2 z-10 group p-3 cursor-pointer"
+                  >
+                    <div className="w-12 h-12 flex items-center justify-center border border-foreground/20 rounded-full transition-all duration-300 group-hover:border-gold group-hover:bg-gold/5">
+                      <ChevronRight className="w-5 h-5 text-foreground/50 transition-colors duration-300 group-hover:text-gold" strokeWidth={1.5} />
+                    </div>
+                  </button>
+                </>
+              )}
+
+              {/* Image Content */}
+              <div
+                ref={lightboxImageRef}
+                className={cn(
+                  "relative w-full max-w-5xl mx-4 aspect-[3/4] md:aspect-auto md:h-[70vh] overflow-hidden animate-in zoom-in-95 fade-in duration-300",
+                  lightboxZoomed ? "cursor-zoom-out" : "cursor-zoom-in"
+                )}
+                onClick={(e) => { e.stopPropagation(); setLightboxZoomed(!lightboxZoomed); }}
+                onMouseMove={handleLightboxMouseMove}
               >
-                <ChevronLeft className="w-10 h-10" />
-              </button>
-              <button
-                onClick={handleNext}
-                className="absolute right-4 top-1/2 -translate-y-1/2 z-10 p-2 text-white/70 hover:text-white transition-colors"
-              >
-                <ChevronRight className="w-10 h-10" />
-              </button>
-            </>
-          )}
-
-          {/* Main Content */}
-          <div className="relative w-full max-w-5xl mx-4 aspect-[3/4] md:aspect-auto md:h-[80vh]">
-            {!isVideo(activeIndex) ? (
-              <GalleryImage
-                src={allMedia[activeIndex]}
-                alt={`${dressName} - Image ${activeIndex + 1}`}
-                fill
-                sizes="100vw"
-                className="object-contain"
-              />
-            ) : (
-              <video
-                src={allMedia[activeIndex]}
-                className="w-full h-full object-contain"
-                controls
-                autoPlay
-              />
-            )}
-          </div>
-
-          {/* Counter */}
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/70 text-sm">
-            {activeIndex + 1} / {allMedia.length}
-          </div>
-
-          {/* Thumbnail Strip */}
-          {allMedia.length > 1 && (
-            <div className="absolute bottom-16 left-1/2 -translate-x-1/2 flex gap-2">
-              {allMedia.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setActiveIndex(index)}
+                <GalleryImage
+                  src={images[activeImageIndex]}
+                  alt={`${dressName} - Image ${activeImageIndex + 1}`}
+                  fill
+                  sizes="100vw"
                   className={cn(
-                    "w-2 h-2 rounded-full transition-all",
-                    activeIndex === index ? "bg-white w-8" : "bg-white/30"
+                    "object-contain transition-all duration-300 ease-out",
+                    lightboxZoomed && "scale-[2.5]"
                   )}
+                  style={
+                    lightboxZoomed
+                      ? {
+                          transformOrigin: `${lightboxMousePos.x}% ${lightboxMousePos.y}%`,
+                        }
+                      : undefined
+                  }
                 />
-              ))}
-            </div>
+
+                {/* Zoom hint */}
+                {!lightboxZoomed && (
+                  <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 px-5 py-2.5 bg-foreground/5 backdrop-blur-sm border border-foreground/10 text-foreground/60 text-xs uppercase tracking-wider pointer-events-none">
+                    <ZoomIn className="w-3.5 h-3.5" strokeWidth={1.5} />
+                    Збільшити
+                  </div>
+                )}
+              </div>
+
+              {/* Counter (hidden when zoomed) */}
+              {!lightboxZoomed && (
+                <div className="absolute top-6 left-1/2 -translate-x-1/2 font-serif text-sm text-foreground/50 tracking-wider">
+                  <span className="text-foreground">{activeImageIndex + 1}</span>
+                  <span className="mx-2">/</span>
+                  <span>{images.length}</span>
+                </div>
+              )}
+
+              {/* Thumbnail Strip (hidden when zoomed) */}
+              {images.length > 1 && !lightboxZoomed && (
+                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 p-2 bg-white/80 backdrop-blur-sm border border-foreground/5">
+                  {images.slice(0, 8).map((image, index) => (
+                    <button
+                      key={index}
+                      onClick={(e) => { e.stopPropagation(); setActiveImageIndex(index); }}
+                      className={cn(
+                        "relative w-14 h-14 overflow-hidden transition-all duration-300 cursor-pointer",
+                        activeImageIndex === index
+                          ? "ring-2 ring-gold ring-offset-1"
+                          : "opacity-60 hover:opacity-100"
+                      )}
+                    >
+                      <GalleryImage
+                        src={image}
+                        alt={`Thumbnail ${index + 1}`}
+                        fill
+                        sizes="56px"
+                        className="object-cover"
+                      />
+                    </button>
+                  ))}
+                  {images.length > 8 && (
+                    <div className="w-14 h-14 flex items-center justify-center bg-foreground/5 text-foreground/50 text-xs">
+                      +{images.length - 8}
+                    </div>
+                  )}
+                </div>
+              )}
+            </>
+          ) : (
+            <>
+              {/* Video Content */}
+              <div
+                className="relative w-full max-w-5xl mx-4 animate-in zoom-in-95 fade-in duration-300"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <video
+                  src={videos[activeVideoIndex ?? 0]}
+                  className="w-full max-h-[70vh] bg-black video-no-volume"
+                  controls
+                  autoPlay
+                  muted
+                />
+              </div>
+
+              {/* Video Counter */}
+              {videos.length > 1 && (
+                <div className="absolute top-6 left-1/2 -translate-x-1/2 font-serif text-sm text-foreground/50 tracking-wider">
+                  <span className="text-foreground">Відео {(activeVideoIndex ?? 0) + 1}</span>
+                  <span className="mx-2">/</span>
+                  <span>{videos.length}</span>
+                </div>
+              )}
+            </>
           )}
         </div>
       )}

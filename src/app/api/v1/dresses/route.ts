@@ -26,9 +26,14 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Filter by style
+    // Filter by style (by name, not ID)
     if (styleId) {
-      conditions.push(eq(dresses.styleId, styleId));
+      const style = await db.query.styles.findFirst({
+        where: eq(styles.name, styleId),
+      });
+      if (style) {
+        conditions.push(eq(dresses.styleId, style.id));
+      }
     }
 
     // Get total count
