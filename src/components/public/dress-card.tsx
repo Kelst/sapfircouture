@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
-import type { Dress } from "@/types/api";
+import type { Dress, Locale } from "@/types/api";
+import { getStyleName } from "@/types/api";
 import { Eye, ImageOff } from "lucide-react";
 
 interface DressCardProps {
@@ -14,6 +16,7 @@ interface DressCardProps {
 }
 
 export function DressCard({ dress, index = 0, onQuickView }: DressCardProps) {
+  const locale = useLocale() as Locale;
   const [isHovered, setIsHovered] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
@@ -150,7 +153,7 @@ export function DressCard({ dress, index = 0, onQuickView }: DressCardProps) {
           {/* Style */}
           {dress.style && (
             <p className="text-[10px] font-sans font-medium uppercase tracking-[0.2em] text-gold mb-1">
-              {dress.style.name}
+              {getStyleName(dress.style, locale)}
             </p>
           )}
 

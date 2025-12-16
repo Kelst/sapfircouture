@@ -143,7 +143,7 @@ export function DressCard({
                 <h3 className="font-medium leading-none truncate">{dress.name}</h3>
                 {dress.style && (
                   <p className="text-sm text-muted-foreground truncate">
-                    {dress.style.name}
+                    {dress.style.nameEn}
                   </p>
                 )}
                 <div className="flex items-center gap-2 pt-1">
@@ -322,7 +322,7 @@ export function DressCard({
                 {dress.style && (
                   <div>
                     <span className="text-muted-foreground">Style: </span>
-                    <span className="font-medium">{dress.style.name}</span>
+                    <span className="font-medium">{dress.style.nameEn}</span>
                   </div>
                 )}
                 {dress.videos && dress.videos.length > 0 && (
@@ -474,7 +474,7 @@ export function DressCard({
                   {dress.style && (
                     <div>
                       <p className="text-sm text-muted-foreground">Style</p>
-                      <p className="font-medium">{dress.style.name}</p>
+                      <p className="font-medium">{dress.style.nameEn}</p>
                     </div>
                   )}
                   {dress.description && (

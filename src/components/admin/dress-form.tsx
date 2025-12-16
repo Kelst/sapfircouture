@@ -90,7 +90,7 @@ export function DressForm({ dress, collectionId }: DressFormProps) {
 
     // Check if style with this name already exists
     const exists = styles.some(
-      (s) => s.name.toLowerCase() === trimmedName.toLowerCase()
+      (s) => s.nameEn.toLowerCase() === trimmedName.toLowerCase()
     );
     if (exists) {
       setStyleError("Style with this name already exists");
@@ -99,8 +99,8 @@ export function DressForm({ dress, collectionId }: DressFormProps) {
 
     setIsCreatingStyle(true);
     try {
-      const newStyle = await createStyle({ name: trimmedName });
-      setStyles((prev) => [...prev, newStyle].sort((a, b) => a.name.localeCompare(b.name)));
+      const newStyle = await createStyle({ nameEn: trimmedName });
+      setStyles((prev) => [...prev, newStyle].sort((a, b) => a.nameEn.localeCompare(b.nameEn)));
       form.setValue("styleId", newStyle.id);
       setNewStyleDialogOpen(false);
       setNewStyleName("");
@@ -311,7 +311,7 @@ export function DressForm({ dress, collectionId }: DressFormProps) {
                           <SelectContent>
                             {styles.map((style) => (
                               <SelectItem key={style.id} value={style.id}>
-                                {style.name}
+                                {style.nameEn}
                               </SelectItem>
                             ))}
                           </SelectContent>

@@ -14,7 +14,7 @@ import {
 
 export async function getStyles() {
   return db.query.styles.findMany({
-    orderBy: (styles, { asc }) => [asc(styles.name)],
+    orderBy: (styles, { asc }) => [asc(styles.nameEn)],
   });
 }
 
@@ -28,16 +28,22 @@ export async function createStyle(input: CreateStyleInput) {
   await requireAdmin();
   const validated = createStyleSchema.parse(input);
 
-  // Check if style with this name already exists
+  // Check if style with this English name already exists
   const existing = await db.query.styles.findFirst({
-    where: eq(styles.name, validated.name),
+    where: eq(styles.nameEn, validated.nameEn),
   });
 
   if (existing) {
     throw new Error("Style with this name already exists");
   }
 
-  const [style] = await db.insert(styles).values(validated).returning();
+  const [style] = await db
+    .insert(styles)
+    .values({
+      nameEn: validated.nameEn,
+      nameUk: validated.nameUk || null,
+    })
+    .returning();
 
   revalidatePath("/admin/styles");
 
@@ -48,9 +54,20 @@ export async function updateStyle(id: string, input: UpdateStyleInput) {
   await requireAdmin();
   const validated = updateStyleSchema.parse(input);
 
+  const updateData: { nameEn?: string; nameUk?: string | null; updatedAt: Date } = {
+    updatedAt: new Date(),
+  };
+
+  if (validated.nameEn !== undefined) {
+    updateData.nameEn = validated.nameEn;
+  }
+  if (validated.nameUk !== undefined) {
+    updateData.nameUk = validated.nameUk || null;
+  }
+
   const [style] = await db
     .update(styles)
-    .set(validated)
+    .set(updateData)
     .where(eq(styles.id, id))
     .returning();
 

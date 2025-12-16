@@ -90,14 +90,18 @@ export function StylesManager({ initialStyles }: StylesManagerProps) {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
+                <TableHead>Name (EN)</TableHead>
+                <TableHead>Name (UK)</TableHead>
                 <TableHead className="w-24">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {styles.map((style) => (
                 <TableRow key={style.id}>
-                  <TableCell className="font-medium">{style.name}</TableCell>
+                  <TableCell className="font-medium">{style.nameEn}</TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {style.nameUk || "—"}
+                  </TableCell>
                   <TableCell>
                     <div className="flex gap-1">
                       <Button

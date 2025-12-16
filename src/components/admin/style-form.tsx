@@ -12,6 +12,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import {
   Dialog,
@@ -37,14 +38,16 @@ export function StyleForm({ style, open, onOpenChange, onSuccess }: StyleFormPro
   const form = useForm<StyleInput>({
     resolver: zodResolver(styleSchema),
     defaultValues: {
-      name: style?.name ?? "",
+      nameEn: style?.nameEn ?? "",
+      nameUk: style?.nameUk ?? "",
     },
   });
 
   useEffect(() => {
     if (open) {
       form.reset({
-        name: style?.name ?? "",
+        nameEn: style?.nameEn ?? "",
+        nameUk: style?.nameUk ?? "",
       });
     }
   }, [open, style, form]);
@@ -75,13 +78,30 @@ export function StyleForm({ style, open, onOpenChange, onSuccess }: StyleFormPro
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
-              name="name"
+              name="nameEn"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>Name (EN) *</FormLabel>
                   <FormControl>
                     <Input {...field} placeholder="A-Line" />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="nameUk"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name (UK)</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="А-силует" />
+                  </FormControl>
+                  <FormDescription>
+                    Optional. If empty, English name will be shown.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

@@ -64,20 +64,20 @@ export function HeroSection({ slides: initialSlides }: HeroSectionProps) {
   // Fallback content when no slides
   if (!isLoading && slides.length === 0) {
     return (
-      <section className="relative h-screen flex items-center justify-center bg-gradient-to-b from-ivory to-pearl">
+      <section className="relative h-screen flex items-center justify-center bg-gradient-to-b from-ivory to-pearl -mt-20">
         <div className="container text-center">
-          <h1 className="font-serif text-hero font-light tracking-wide text-foreground mb-4 animate-fade-up">
+          <h1 className="font-serif text-hero font-light tracking-wide text-foreground mb-4 hero-fade-in">
             {t("title")}
           </h1>
           <p
-            className="text-lg text-muted-foreground mb-8 animate-fade-up"
-            style={{ animationDelay: "200ms" }}
+            className="text-lg text-muted-foreground mb-8 hero-fade-in"
+            style={{ animationDelay: "400ms" }}
           >
             {t("subtitle")}
           </p>
           <div
-            className="animate-fade-up"
-            style={{ animationDelay: "400ms" }}
+            className="hero-fade-in"
+            style={{ animationDelay: "800ms" }}
           >
             <Link href="/catalog" className="btn-gold">
               {t("cta")}
@@ -89,7 +89,7 @@ export function HeroSection({ slides: initialSlides }: HeroSectionProps) {
   }
 
   return (
-    <section className="relative h-screen overflow-hidden">
+    <section className="relative h-screen overflow-hidden -mt-20">
       {/* Slides */}
       {slides.map((slide, index) => {
         const title = getHeroSlideText(slide, "title", locale);
@@ -103,7 +103,22 @@ export function HeroSection({ slides: initialSlides }: HeroSectionProps) {
               index === currentSlide ? "opacity-100 z-10" : "opacity-0 z-0"
             )}
           >
-            {/* Image with Ken Burns effect */}
+            {/* Blurred background image with gold tint for areas not covered */}
+            <div className="absolute inset-0 overflow-hidden bg-gold">
+              <Image
+                src={slide.image}
+                alt=""
+                fill
+                sizes="100vw"
+                className="object-cover blur-md scale-125"
+                unoptimized
+                aria-hidden="true"
+              />
+              {/* Gold tint overlay */}
+              <div className="absolute inset-0 bg-gold/90" />
+            </div>
+
+            {/* Main image with Ken Burns effect */}
             <div
               className={cn(
                 "absolute inset-0",
@@ -116,7 +131,8 @@ export function HeroSection({ slides: initialSlides }: HeroSectionProps) {
                 fill
                 priority={index === 0}
                 sizes="100vw"
-                className="object-cover"
+                className="object-cover md:object-contain"
+                unoptimized
               />
             </div>
 
@@ -128,41 +144,35 @@ export function HeroSection({ slides: initialSlides }: HeroSectionProps) {
               <div className="container text-center text-white">
                 {title && (
                   <h1
+                    key={`title-${slide.id}-${currentSlide}`}
                     className={cn(
                       "font-serif text-hero font-light tracking-wide mb-4",
-                      "transition-all duration-700 ease-out-expo",
-                      index === currentSlide
-                        ? "opacity-100 translate-y-0"
-                        : "opacity-0 translate-y-8"
+                      index === currentSlide ? "hero-fade-in" : "opacity-0"
                     )}
-                    style={{ transitionDelay: index === currentSlide ? "300ms" : "0ms" }}
+                    style={{ animationDelay: index === currentSlide ? "200ms" : "0ms" }}
                   >
                     {title}
                   </h1>
                 )}
                 {subtitle && (
                   <p
+                    key={`subtitle-${slide.id}-${currentSlide}`}
                     className={cn(
                       "text-lg md:text-xl text-white/80 mb-8 max-w-2xl mx-auto",
-                      "transition-all duration-700 ease-out-expo",
-                      index === currentSlide
-                        ? "opacity-100 translate-y-0"
-                        : "opacity-0 translate-y-8"
+                      index === currentSlide ? "hero-fade-in" : "opacity-0"
                     )}
-                    style={{ transitionDelay: index === currentSlide ? "500ms" : "0ms" }}
+                    style={{ animationDelay: index === currentSlide ? "400ms" : "0ms" }}
                   >
                     {subtitle}
                   </p>
                 )}
                 {slide.linkUrl && (
                   <div
+                    key={`cta-${slide.id}-${currentSlide}`}
                     className={cn(
-                      "transition-all duration-700 ease-out-expo",
-                      index === currentSlide
-                        ? "opacity-100 translate-y-0"
-                        : "opacity-0 translate-y-8"
+                      index === currentSlide ? "hero-fade-in" : "opacity-0"
                     )}
-                    style={{ transitionDelay: index === currentSlide ? "700ms" : "0ms" }}
+                    style={{ animationDelay: index === currentSlide ? "600ms" : "0ms" }}
                   >
                     <Link
                       href={slide.linkUrl}

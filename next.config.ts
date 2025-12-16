@@ -16,7 +16,7 @@ const nextConfig: NextConfig = {
         protocol: s3UrlParsed.protocol.replace(":", "") as "http" | "https",
         hostname: s3UrlParsed.hostname,
         port: s3UrlParsed.port || "",
-        pathname: `${s3UrlParsed.pathname}/**`,
+        pathname: "/**",
       },
     ],
   },

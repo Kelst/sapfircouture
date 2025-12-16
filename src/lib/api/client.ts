@@ -201,7 +201,7 @@ async function fetchServerApi<T>(endpoint: string): Promise<ApiResponse<T>> {
   try {
     const baseUrl = getServerApiUrl();
     const res = await fetch(`${baseUrl}/api/v1${endpoint}`, {
-      next: { revalidate: 60 }, // Cache for 60 seconds
+      cache: "no-store", // Always fetch fresh data
     });
     return res.json();
   } catch (error) {

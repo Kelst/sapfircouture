@@ -411,6 +411,20 @@
   }
 }
 
+/* Hero fade-in - smooth, elegant animation */
+@keyframes heroFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+    filter: blur(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -484,6 +498,12 @@
 
   .animate-fade-in {
     animation: fadeIn 0.5s ease-out forwards;
+  }
+
+  /* Hero smooth fade-in animation */
+  .hero-fade-in {
+    opacity: 0;
+    animation: heroFadeIn 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
   }
 
   .animate-ken-burns {

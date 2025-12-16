@@ -1,7 +1,8 @@
 import { z } from "zod";
 
 export const styleSchema = z.object({
-  name: z.string().min(1, "Name is required").max(100),
+  nameEn: z.string().min(1, "English name is required").max(100),
+  nameUk: z.string().max(100).optional().or(z.literal("")),
 });
 
 export const createStyleSchema = styleSchema;

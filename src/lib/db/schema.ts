@@ -89,8 +89,10 @@ export const collections = pgTable("collections", {
 
 export const styles = pgTable("styles", {
   id: uuid("id").primaryKey().defaultRandom(),
-  name: varchar("name", { length: 100 }).notNull().unique(),
+  nameEn: varchar("name_en", { length: 100 }).notNull().unique(),
+  nameUk: varchar("name_uk", { length: 100 }),
   createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
 export const dresses = pgTable("dresses", {

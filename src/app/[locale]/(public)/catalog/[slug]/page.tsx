@@ -6,6 +6,7 @@ import { SimilarDresses } from "@/components/public/similar-dresses";
 import { BookFittingForm } from "./book-fitting-form";
 import { ShareButton } from "./share-button";
 import { getDressServer, getDressesServer } from "@/lib/api/client";
+import { getStyleName, type Locale } from "@/types/api";
 import { ChevronLeft } from "lucide-react";
 import type { Metadata } from "next";
 
@@ -33,7 +34,7 @@ export async function generateMetadata({ params }: DressPageProps): Promise<Meta
 }
 
 export default async function DressPage({ params }: DressPageProps) {
-  const { slug } = await params;
+  const { slug, locale } = await params;
   const t = await getTranslations("dress");
 
   const dress = await getDressServer(slug);
@@ -103,7 +104,9 @@ export default async function DressPage({ params }: DressPageProps) {
                     <span className="text-sm text-muted-foreground">
                       {t("style")}:
                     </span>
-                    <span className="text-sm font-medium">{dress.style.name}</span>
+                    <span className="text-sm font-medium">
+                      {getStyleName(dress.style, locale as Locale)}
+                    </span>
                   </div>
                 )}
 

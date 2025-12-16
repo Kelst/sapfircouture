@@ -1,10 +1,11 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
-import type { Collection, Style } from "@/types/api";
+import type { Collection, Style, Locale } from "@/types/api";
+import { getStyleName } from "@/types/api";
 import { X, SlidersHorizontal, Check } from "lucide-react";
 import {
   Sheet,
@@ -33,6 +34,7 @@ export function DressFilters({
 }: DressFiltersProps) {
   const t = useTranslations("catalog.filters");
   const tCatalog = useTranslations("catalog");
+  const locale = useLocale() as Locale;
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState(false);
@@ -121,15 +123,15 @@ export function DressFilters({
           {styles.map((style) => (
             <button
               key={style.id}
-              onClick={() => updateFilters("style", style.name)}
+              onClick={() => updateFilters("style", style.nameEn)}
               className={cn(
                 "block w-full text-left py-2 text-sm transition-colors",
-                currentStyle === style.name
+                currentStyle === style.nameEn
                   ? "text-gold font-medium"
                   : "text-muted-foreground hover:text-foreground"
               )}
             >
-              {style.name}
+              {getStyleName(style, locale)}
             </button>
           ))}
         </div>
@@ -276,16 +278,16 @@ export function DressFilters({
                   {styles.map((style) => (
                     <button
                       key={style.id}
-                      onClick={() => updateFilters("style", style.name)}
+                      onClick={() => updateFilters("style", style.nameEn)}
                       className={cn(
                         "flex items-center justify-between w-full py-3 px-4 rounded-lg transition-all",
-                        currentStyle === style.name
+                        currentStyle === style.nameEn
                           ? "bg-gold/10 text-gold"
                           : "hover:bg-muted/50"
                       )}
                     >
-                      <span className="text-sm">{style.name}</span>
-                      {currentStyle === style.name && (
+                      <span className="text-sm">{getStyleName(style, locale)}</span>
+                      {currentStyle === style.nameEn && (
                         <Check className="w-4 h-4" />
                       )}
                     </button>
@@ -317,6 +319,7 @@ export function ActiveFilters({
   currentStyle,
 }: Pick<DressFiltersProps, "collections" | "styles" | "currentCollection" | "currentStyle">) {
   const t = useTranslations("catalog.filters");
+  const locale = useLocale() as Locale;
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -332,6 +335,7 @@ export function ActiveFilters({
   };
 
   const collectionName = collections.find(c => c.slug === currentCollection)?.name;
+  const activeStyle = styles.find(s => s.nameEn === currentStyle);
 
   return (
     <div className="flex flex-wrap items-center gap-2 mb-6">
@@ -344,12 +348,12 @@ export function ActiveFilters({
           <X className="w-3 h-3" />
         </button>
       )}
-      {currentStyle && (
+      {currentStyle && activeStyle && (
         <button
           onClick={() => removeFilter("style")}
           className="flex items-center gap-1.5 px-3 py-1.5 bg-gold/10 text-gold text-xs font-medium uppercase tracking-wider rounded-sm hover:bg-gold/20 transition-colors"
         >
-          {currentStyle}
+          {getStyleName(activeStyle, locale)}
           <X className="w-3 h-3" />
         </button>
       )}

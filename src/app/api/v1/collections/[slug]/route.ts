@@ -36,7 +36,8 @@ export async function GET(
         order: dresses.order,
         style: {
           id: styles.id,
-          name: styles.name,
+          nameEn: styles.nameEn,
+          nameUk: styles.nameUk,
         },
       })
       .from(dresses)

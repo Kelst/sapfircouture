@@ -205,7 +205,7 @@ export function DressesList({ dresses, collectionId, styles }: DressesListProps)
                 <SelectItem value="all">All styles</SelectItem>
                 {styles.map((style) => (
                   <SelectItem key={style.id} value={style.id}>
-                    {style.name}
+                    {style.nameEn}
                   </SelectItem>
                 ))}
               </SelectContent>

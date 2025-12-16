@@ -8,11 +8,12 @@ export async function GET() {
     const allStyles = await db
       .select({
         id: styles.id,
-        name: styles.name,
+        nameEn: styles.nameEn,
+        nameUk: styles.nameUk,
         createdAt: styles.createdAt,
       })
       .from(styles)
-      .orderBy(asc(styles.name));
+      .orderBy(asc(styles.nameEn));
 
     return NextResponse.json({
       success: true,

@@ -26,10 +26,10 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Filter by style (by name, not ID)
+    // Filter by style (by English name)
     if (styleId) {
       const style = await db.query.styles.findFirst({
-        where: eq(styles.name, styleId),
+        where: eq(styles.nameEn, styleId),
       });
       if (style) {
         conditions.push(eq(dresses.styleId, style.id));
@@ -60,7 +60,8 @@ export async function GET(request: NextRequest) {
         },
         style: {
           id: styles.id,
-          name: styles.name,
+          nameEn: styles.nameEn,
+          nameUk: styles.nameUk,
         },
       })
       .from(dresses)

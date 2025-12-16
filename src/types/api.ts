@@ -41,14 +41,16 @@ export interface Dress {
   } | null;
   style: {
     id: string;
-    name: string;
+    nameEn: string;
+    nameUk: string | null;
   } | null;
 }
 
 // Style
 export interface Style {
   id: string;
-  name: string;
+  nameEn: string;
+  nameUk: string | null;
   createdAt: string;
 }
 
@@ -158,4 +160,15 @@ export function getHeroSlideText(
     return locale === "uk" ? slide.titleUk : slide.titleEn;
   }
   return locale === "uk" ? slide.subtitleUk : slide.subtitleEn;
+}
+
+// Helper to get localized style name (fallback to English if Ukrainian not available)
+export function getStyleName(
+  style: Style | { nameEn: string; nameUk: string | null },
+  locale: Locale
+): string {
+  if (locale === "uk" && style.nameUk) {
+    return style.nameUk;
+  }
+  return style.nameEn;
 }
