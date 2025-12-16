@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { collections, dresses } from "@/lib/db/schema";
+import { collections, dresses, type Collection } from "@/lib/db/schema";
 import { eq, count } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth/helpers";
@@ -11,6 +11,11 @@ import {
   type CreateCollectionInput,
   type UpdateCollectionInput,
 } from "@/lib/validators/collection";
+import type { PaginationParams, PaginatedResult } from "@/types/pagination";
+import {
+  getPaginationParams,
+  createPaginatedResult,
+} from "@/lib/utils/pagination";
 
 export async function getCollections() {
   return db.query.collections.findMany({
@@ -21,6 +26,29 @@ export async function getCollections() {
       },
     },
   });
+}
+
+export async function getCollectionsPaginated(
+  params: PaginationParams = {}
+): Promise<PaginatedResult<Collection & { dresses: { id: string }[] }>> {
+  const { page, pageSize, offset, limit } = getPaginationParams(params);
+
+  // Get total count
+  const [totalResult] = await db.select({ count: count() }).from(collections);
+
+  // Fetch paginated data
+  const data = await db.query.collections.findMany({
+    orderBy: (collections, { asc }) => [asc(collections.order), asc(collections.name)],
+    with: {
+      dresses: {
+        columns: { id: true },
+      },
+    },
+    limit,
+    offset,
+  });
+
+  return createPaginatedResult(data, totalResult.count, page, pageSize);
 }
 
 export async function getCollectionById(id: string) {

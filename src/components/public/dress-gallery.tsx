@@ -50,7 +50,7 @@ function GalleryImage({
       className={className}
       style={style}
       onError={() => setError(true)}
-      unoptimized={src.includes("localhost")}
+      unoptimized
     />
   );
 }

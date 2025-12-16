@@ -43,8 +43,8 @@ export function Header() {
     <>
       <header
         className={cn(
-          "fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out-expo",
-          "bg-white/95 backdrop-blur-md shadow-soft",
+          "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
+          "bg-white/98 backdrop-blur-sm shadow-soft will-change-transform",
           isScrolled ? "py-3" : "py-4"
         )}
       >
@@ -53,7 +53,7 @@ export function Header() {
           <Link
             href="/"
             className={cn(
-              "font-serif font-medium tracking-widest transition-all duration-500 ease-out-expo",
+              "font-serif font-medium tracking-widest transition-[font-size] duration-200",
               isScrolled ? "text-xl" : "text-2xl"
             )}
           >

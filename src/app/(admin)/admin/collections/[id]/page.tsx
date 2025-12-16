@@ -3,19 +3,33 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, Plus, Edit } from "lucide-react";
 import { getCollectionById } from "@/actions/collection.actions";
+import { getDressesByCollectionPaginated } from "@/actions/dress.actions";
 import { getStyles } from "@/actions/style.actions";
 import { DressesList } from "./dresses-list";
 
 interface CollectionDetailPageProps {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{
+    page?: string;
+    pageSize?: string;
+    style?: string;
+  }>;
 }
 
 export default async function CollectionDetailPage({
   params,
+  searchParams,
 }: CollectionDetailPageProps) {
   const { id } = await params;
-  const [collection, styles] = await Promise.all([
+  const { page, pageSize, style } = await searchParams;
+
+  const [collection, dressesResult, styles] = await Promise.all([
     getCollectionById(id),
+    getDressesByCollectionPaginated(id, {
+      page: page ? parseInt(page) : 1,
+      pageSize: pageSize ? parseInt(pageSize) : 20,
+      styleId: style || undefined,
+    }),
     getStyles(),
   ]);
 
@@ -35,8 +49,8 @@ export default async function CollectionDetailPage({
           <div className="flex-1">
             <h1 className="text-2xl font-bold">{collection.name}</h1>
             <p className="text-muted-foreground">
-              {collection.dresses.length}{" "}
-              {collection.dresses.length === 1 ? "dress" : "dresses"}
+              {dressesResult.pagination.total}{" "}
+              {dressesResult.pagination.total === 1 ? "dress" : "dresses"}
             </p>
           </div>
         </div>
@@ -56,7 +70,13 @@ export default async function CollectionDetailPage({
         </div>
       </div>
 
-      <DressesList dresses={collection.dresses} collectionId={id} styles={styles} />
+      <DressesList
+        dresses={dressesResult.data}
+        collectionId={id}
+        styles={styles}
+        pagination={dressesResult.pagination}
+        currentStyleFilter={style}
+      />
     </div>
   );
 }

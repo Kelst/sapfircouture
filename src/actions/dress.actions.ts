@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/db";
 import { dresses } from "@/lib/db/schema";
-import { eq, and, inArray } from "drizzle-orm";
+import { eq, and, inArray, count } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth/helpers";
 import {
@@ -11,6 +11,12 @@ import {
   type CreateDressInput,
   type UpdateDressInput,
 } from "@/lib/validators/dress";
+import type { PaginationParams, PaginatedResult } from "@/types/pagination";
+import {
+  getPaginationParams,
+  createPaginatedResult,
+} from "@/lib/utils/pagination";
+import type { Dress, Style } from "@/lib/db/schema";
 
 export async function getDresses() {
   return db.query.dresses.findMany({
@@ -30,6 +36,44 @@ export async function getDressesByCollection(collectionId: string) {
       style: true,
     },
   });
+}
+
+interface DressesPaginationParams extends PaginationParams {
+  styleId?: string;
+}
+
+export async function getDressesByCollectionPaginated(
+  collectionId: string,
+  params: DressesPaginationParams = {}
+): Promise<PaginatedResult<Dress & { style: Style | null }>> {
+  const { page, pageSize, offset, limit } = getPaginationParams(params);
+  const { styleId } = params;
+
+  // Build where conditions
+  const conditions = [eq(dresses.collectionId, collectionId)];
+  if (styleId) {
+    conditions.push(eq(dresses.styleId, styleId));
+  }
+  const whereClause = conditions.length > 1 ? and(...conditions) : conditions[0];
+
+  // Get total count
+  const [totalResult] = await db
+    .select({ count: count() })
+    .from(dresses)
+    .where(whereClause);
+
+  // Fetch paginated data
+  const data = await db.query.dresses.findMany({
+    where: whereClause,
+    orderBy: (dresses, { asc }) => [asc(dresses.order)],
+    with: {
+      style: true,
+    },
+    limit,
+    offset,
+  });
+
+  return createPaginatedResult(data, totalResult.count, page, pageSize);
 }
 
 export async function getDressBySlug(slug: string) {

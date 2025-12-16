@@ -36,6 +36,7 @@ export function LightboxGallery({ images }: LightboxGalleryProps) {
             alt="Main image"
             fill
             className="object-cover"
+            unoptimized
           />
         </div>
         {images.length > 1 && (
@@ -54,6 +55,7 @@ export function LightboxGallery({ images }: LightboxGalleryProps) {
                   alt={`Image ${i + 2}`}
                   fill
                   className="object-cover"
+                  unoptimized
                 />
               </div>
             ))}

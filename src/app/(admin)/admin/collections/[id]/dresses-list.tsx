@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useTransition, useOptimistic, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useTransition, useOptimistic, useCallback } from "react";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { DressCard } from "@/components/admin/dress-card";
 import { DeleteDialog } from "@/components/admin/delete-dialog";
 import { ConfirmDialog } from "@/components/admin/confirm-dialog";
 import { BulkActionsToolbar } from "@/components/admin/bulk-actions-toolbar";
+import { DataTablePagination } from "@/components/admin/data-table-pagination";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
@@ -22,23 +23,48 @@ import {
 } from "@/actions/dress.actions";
 import { toast } from "sonner";
 import type { Dress, Style } from "@/lib/db/schema";
+import type { PaginationMeta } from "@/types/pagination";
 
 interface DressesListProps {
   dresses: (Dress & { style?: Style | null })[];
   collectionId: string;
   styles: Style[];
+  pagination?: PaginationMeta;
+  currentStyleFilter?: string;
 }
 
 type BulkAction = "publish" | "unpublish" | "delete" | null;
 
-export function DressesList({ dresses, collectionId, styles }: DressesListProps) {
+export function DressesList({
+  dresses,
+  collectionId,
+  styles,
+  pagination,
+  currentStyleFilter,
+}: DressesListProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [bulkAction, setBulkAction] = useState<BulkAction>(null);
   const [isBulkPending, startBulkTransition] = useTransition();
-  const [styleFilter, setStyleFilter] = useState<string>("all");
+
+  // URL-based style filter
+  const handleStyleFilterChange = useCallback(
+    (value: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (value === "all") {
+        params.delete("style");
+      } else {
+        params.set("style", value);
+      }
+      params.set("page", "1"); // Reset to first page when filter changes
+      router.push(`${pathname}?${params.toString()}`);
+    },
+    [pathname, searchParams, router]
+  );
 
   // Optimistic updates for toggle published
   const [optimisticDresses, updateOptimisticDresses] = useOptimistic(
@@ -47,14 +73,8 @@ export function DressesList({ dresses, collectionId, styles }: DressesListProps)
       state.map((d) => (d.id === id ? { ...d, isPublished } : d))
   );
 
-  // Filter dresses by style
-  const filteredDresses = useMemo(() => {
-    if (styleFilter === "all") return optimisticDresses;
-    return optimisticDresses.filter((d) => d.styleId === styleFilter);
-  }, [optimisticDresses, styleFilter]);
-
   const selectionMode = selectedIds.size > 0;
-  const isAllSelected = selectedIds.size === filteredDresses.length && filteredDresses.length > 0;
+  const isAllSelected = selectedIds.size === optimisticDresses.length && optimisticDresses.length > 0;
   const selectedCount = selectedIds.size;
 
   // Selection handlers
@@ -74,7 +94,7 @@ export function DressesList({ dresses, collectionId, styles }: DressesListProps)
     if (isAllSelected) {
       setSelectedIds(new Set());
     } else {
-      setSelectedIds(new Set(filteredDresses.map((d) => d.id)));
+      setSelectedIds(new Set(optimisticDresses.map((d) => d.id)));
     }
   };
 
@@ -197,7 +217,10 @@ export function DressesList({ dresses, collectionId, styles }: DressesListProps)
           </label>
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">Style:</span>
-            <Select value={styleFilter} onValueChange={setStyleFilter}>
+            <Select
+              value={currentStyleFilter || "all"}
+              onValueChange={handleStyleFilterChange}
+            >
               <SelectTrigger className="w-40">
                 <SelectValue />
               </SelectTrigger>
@@ -215,12 +238,16 @@ export function DressesList({ dresses, collectionId, styles }: DressesListProps)
       )}
 
       <div className="space-y-3">
-        {filteredDresses.length === 0 ? (
+        {optimisticDresses.length === 0 ? (
           <div className="text-center py-8 border rounded-lg bg-muted/30">
-            <p className="text-muted-foreground">No dresses match the selected filter</p>
+            <p className="text-muted-foreground">
+              {currentStyleFilter
+                ? "No dresses match the selected filter"
+                : "No dresses in this collection"}
+            </p>
           </div>
         ) : (
-          filteredDresses.map((dress) => (
+          optimisticDresses.map((dress) => (
             <DressCard
               key={dress.id}
               dress={dress}
@@ -236,6 +263,10 @@ export function DressesList({ dresses, collectionId, styles }: DressesListProps)
           ))
         )}
       </div>
+
+      {pagination && pagination.totalPages > 1 && (
+        <DataTablePagination pagination={pagination} />
+      )}
 
       {/* Single Delete Dialog */}
       <DeleteDialog

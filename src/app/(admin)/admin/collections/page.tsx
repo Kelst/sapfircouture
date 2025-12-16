@@ -1,11 +1,25 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { getCollections } from "@/actions/collection.actions";
+import { getCollectionsPaginated } from "@/actions/collection.actions";
 import { CollectionsGrid } from "./collections-grid";
+import { DataTablePagination } from "@/components/admin/data-table-pagination";
 
-export default async function CollectionsPage() {
-  const collections = await getCollections();
+interface CollectionsPageProps {
+  searchParams: Promise<{
+    page?: string;
+    pageSize?: string;
+  }>;
+}
+
+export default async function CollectionsPage({
+  searchParams,
+}: CollectionsPageProps) {
+  const { page, pageSize } = await searchParams;
+  const result = await getCollectionsPaginated({
+    page: page ? parseInt(page) : 1,
+    pageSize: pageSize ? parseInt(pageSize) : 20,
+  });
 
   return (
     <div className="space-y-6">
@@ -13,7 +27,7 @@ export default async function CollectionsPage() {
         <div>
           <h1 className="text-2xl font-bold">Collections</h1>
           <p className="text-muted-foreground">
-            Manage your wedding dress collections
+            Manage your wedding dress collections ({result.pagination.total} total)
           </p>
         </div>
         <Link href="/admin/collections/new">
@@ -24,7 +38,11 @@ export default async function CollectionsPage() {
         </Link>
       </div>
 
-      <CollectionsGrid collections={collections} />
+      <CollectionsGrid collections={result.data} />
+
+      {result.pagination.totalPages > 1 && (
+        <DataTablePagination pagination={result.pagination} />
+      )}
     </div>
   );
 }

@@ -213,16 +213,22 @@ export async function getContentSettings(): Promise<ContentSettings> {
 export async function saveContentSettings(data: ContentSettings) {
   await requireAdmin();
 
-  await Promise.all([
-    setSetting(CONTENT_SETTINGS_KEYS.brandStatementEn, data.brandStatementEn),
-    setSetting(CONTENT_SETTINGS_KEYS.brandStatementUk, data.brandStatementUk),
-    setSetting(CONTENT_SETTINGS_KEYS.aboutContentEn, data.aboutContentEn),
-    setSetting(CONTENT_SETTINGS_KEYS.aboutContentUk, data.aboutContentUk),
-    setSetting(CONTENT_SETTINGS_KEYS.ctaBannerImage, data.ctaBannerImage),
-    setSetting(CONTENT_SETTINGS_KEYS.ctaBannerTextEn, data.ctaBannerTextEn),
-    setSetting(CONTENT_SETTINGS_KEYS.ctaBannerTextUk, data.ctaBannerTextUk),
-  ]);
+  try {
+    await Promise.all([
+      setSetting(CONTENT_SETTINGS_KEYS.brandStatementEn, data.brandStatementEn || ""),
+      setSetting(CONTENT_SETTINGS_KEYS.brandStatementUk, data.brandStatementUk || ""),
+      setSetting(CONTENT_SETTINGS_KEYS.aboutContentEn, data.aboutContentEn || ""),
+      setSetting(CONTENT_SETTINGS_KEYS.aboutContentUk, data.aboutContentUk || ""),
+      setSetting(CONTENT_SETTINGS_KEYS.ctaBannerImage, data.ctaBannerImage || ""),
+      setSetting(CONTENT_SETTINGS_KEYS.ctaBannerTextEn, data.ctaBannerTextEn || ""),
+      setSetting(CONTENT_SETTINGS_KEYS.ctaBannerTextUk, data.ctaBannerTextUk || ""),
+    ]);
 
-  revalidatePath("/admin/settings");
-  return { success: true };
+    revalidatePath("/admin/settings");
+    revalidatePath("/");
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to save content settings:", error);
+    throw error;
+  }
 }

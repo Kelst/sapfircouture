@@ -535,6 +535,9 @@
 
   .animate-ken-burns {
     animation: kenBurns 12s ease-out forwards;
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
   }
 
   .animate-shimmer {

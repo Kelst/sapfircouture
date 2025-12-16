@@ -74,6 +74,7 @@ export function ContentSettingsForm({
     try {
       const formData = new FormData();
       formData.append("file", file);
+      formData.append("optimize", "true"); // Optimize CTA Banner images
 
       const response = await fetch("/api/upload", {
         method: "POST",
@@ -86,7 +87,7 @@ export function ContentSettingsForm({
 
       const data = await response.json();
       form.setValue("ctaBannerImage", data.url);
-      toast.success("Image uploaded");
+      toast.success("Image uploaded and optimized");
     } catch {
       toast.error("Failed to upload image");
     } finally {

@@ -82,7 +82,7 @@ export function FeaturedCollections({ collections: initialCollections }: Feature
         <div
           className={cn(
             "text-center mb-12 md:mb-16",
-            "transition-all duration-700 ease-out-expo",
+            "transition-[opacity,transform] duration-500",
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           )}
         >
@@ -134,7 +134,7 @@ export function FeaturedCollections({ collections: initialCollections }: Feature
         <div
           className={cn(
             "text-center mt-12",
-            "transition-all duration-700 ease-out-expo",
+            "transition-[opacity,transform] duration-500",
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           )}
           style={{ transitionDelay: isVisible ? "600ms" : "0ms" }}
@@ -185,6 +185,7 @@ function CollectionCard({ collection, size, index, isVisible }: CollectionCardPr
           fill
           sizes={size === "large" ? "(max-width: 1024px) 100vw, 50vw" : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"}
           className="object-cover transition-transform duration-700 ease-out-expo group-hover:scale-105"
+          unoptimized
         />
       ) : (
         <div className="absolute inset-0 bg-pearl" />
