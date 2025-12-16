@@ -20,6 +20,7 @@ export function HeroSection({ slides: initialSlides }: HeroSectionProps) {
   const [slides, setSlides] = useState<HeroSlide[]>(initialSlides ?? []);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isLoading, setIsLoading] = useState(!initialSlides);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   // Fetch slides if not provided
   useEffect(() => {
@@ -103,19 +104,18 @@ export function HeroSection({ slides: initialSlides }: HeroSectionProps) {
               index === currentSlide ? "opacity-100 z-10" : "opacity-0 z-0"
             )}
           >
-            {/* Blurred background image with gold tint for areas not covered */}
-            <div className="absolute inset-0 overflow-hidden bg-gold">
+            {/* Blurred background image for areas not covered */}
+            <div className="absolute inset-0 overflow-hidden">
               <Image
                 src={slide.image}
                 alt=""
                 fill
+                priority={index === 0}
                 sizes="100vw"
                 className="object-cover blur-md scale-125"
                 unoptimized
                 aria-hidden="true"
               />
-              {/* Gold tint overlay */}
-              <div className="absolute inset-0 bg-gold/90" />
             </div>
 
             {/* Main image with Ken Burns effect */}
@@ -133,6 +133,7 @@ export function HeroSection({ slides: initialSlides }: HeroSectionProps) {
                 sizes="100vw"
                 className="object-cover md:object-contain"
                 unoptimized
+                onLoad={() => index === 0 && setImageLoaded(true)}
               />
             </div>
 
