@@ -13,6 +13,7 @@ import {
   Users,
   Share2,
   Settings,
+  Image,
 } from "lucide-react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -71,6 +72,12 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
     .slice(0, 2);
 
   const navItems = [
+    {
+      title: "Hero Slides",
+      url: "/admin/hero-slides",
+      icon: Image,
+      isActive: pathname.includes("/admin/hero-slides"),
+    },
     {
       title: "Collections",
       url: "/admin/collections",

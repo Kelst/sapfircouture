@@ -1,31 +1,146 @@
-import { useTranslations } from "next-intl";
-import { LightboxGallery } from "@/components/public/lightbox-gallery";
-import { ContactForm } from "@/components/public/contact-form";
+import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
+import { DressGallery } from "@/components/public/dress-gallery";
+import { SimilarDresses } from "@/components/public/similar-dresses";
+import { BookFittingForm } from "./book-fitting-form";
+import { ShareButton } from "./share-button";
+import { getDressServer, getDressesServer } from "@/lib/api/client";
+import { ChevronLeft } from "lucide-react";
+import type { Metadata } from "next";
 
 interface DressPageProps {
   params: Promise<{ slug: string; locale: string }>;
 }
 
+export async function generateMetadata({ params }: DressPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const dress = await getDressServer(slug);
+
+  if (!dress) {
+    return {
+      title: "Dress not found",
+    };
+  }
+
+  return {
+    title: `${dress.name} - Sapfir Couture`,
+    description: dress.description || `Discover ${dress.name} from our exclusive wedding dress collection`,
+    openGraph: {
+      images: dress.images[0] ? [dress.images[0]] : [],
+    },
+  };
+}
+
 export default async function DressPage({ params }: DressPageProps) {
   const { slug } = await params;
-  const t = useTranslations("catalog");
+  const t = await getTranslations("dress");
 
-  // TODO: Fetch dress data by slug
+  const dress = await getDressServer(slug);
+
+  if (!dress) {
+    notFound();
+  }
+
+  // Fetch similar dresses (same collection or style)
+  const { dresses: similarDresses } = await getDressesServer({
+    collection: dress.collection?.slug,
+    limit: 6,
+  });
+
+  // Filter out current dress from similar dresses
+  const filteredSimilar = similarDresses.filter((d) => d.id !== dress.id);
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="grid lg:grid-cols-2 gap-8">
-        <div>
-          <LightboxGallery images={[]} />
-        </div>
-        <div>
-          <h1 className="text-3xl font-bold mb-4">Dress {slug}</h1>
-          <p className="text-muted-foreground mb-6">
-            {/* Description placeholder */}
-          </p>
-          <ContactForm />
+    <main className="min-h-screen bg-white">
+      {/* Breadcrumb */}
+      <div className="bg-ivory py-4">
+        <div className="container">
+          <Link
+            href="/catalog"
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-gold transition-colors"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            {t("backToCatalog")}
+          </Link>
         </div>
       </div>
-    </div>
+
+      {/* Main Content */}
+      <section className="py-8 md:py-16">
+        <div className="container">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-16">
+            {/* Gallery */}
+            <div>
+              <DressGallery
+                images={dress.images}
+                videos={dress.videos}
+                dressName={dress.name}
+              />
+            </div>
+
+            {/* Details */}
+            <div className="lg:sticky lg:top-28 lg:self-start">
+              <div className="space-y-6">
+                {/* Collection Badge */}
+                {dress.collection && (
+                  <Link
+                    href={`/catalog?collection=${dress.collection.slug}`}
+                    className="inline-block text-xs font-sans font-medium uppercase tracking-[0.2em] text-gold hover:underline"
+                  >
+                    {dress.collection.name}
+                  </Link>
+                )}
+
+                {/* Dress Name */}
+                <h1 className="font-serif text-h2 font-light tracking-wide text-foreground">
+                  {dress.name}
+                </h1>
+
+                {/* Style Badge */}
+                {dress.style && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">
+                      {t("style")}:
+                    </span>
+                    <span className="text-sm font-medium">{dress.style.name}</span>
+                  </div>
+                )}
+
+                {/* Description */}
+                {dress.description && (
+                  <div className="py-6 border-t border-b border-muted/30">
+                    <p className="text-muted-foreground leading-relaxed">
+                      {dress.description}
+                    </p>
+                  </div>
+                )}
+
+                {/* CTA Section */}
+                <div className="space-y-4 pt-4">
+                  <BookFittingForm dressId={dress.id} dressName={dress.name} />
+
+                  {/* Share */}
+                  <ShareButton title={dress.name} />
+                </div>
+
+                {/* Additional Info */}
+                <div className="pt-8 space-y-4 text-sm text-muted-foreground">
+                  <p>
+                    * {dress.name} is available exclusively at Sapfir Couture.
+                    Book your private fitting today.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Similar Dresses */}
+      {filteredSimilar.length > 0 && (
+        <SimilarDresses dresses={filteredSimilar} />
+      )}
+    </main>
   );
 }

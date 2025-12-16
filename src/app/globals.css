@@ -3,11 +3,14 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ═══════════════════════════════════════════════════════════════
+   SAPFIR COUTURE - PREMIUM BRIDAL DESIGN SYSTEM
+   ═══════════════════════════════════════════════════════════════ */
+
 @theme inline {
+  /* Colors */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -37,6 +40,8 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+
+  /* Radius */
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -44,91 +49,628 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
-}
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
+  /* Fonts */
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-serif), ui-serif, Georgia, serif;
 }
 
 :root {
+  /* Base */
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+
+  /* ═══════════════════════════════════════════════════════════════
+     BACKGROUNDS — Clean, elegant, let dresses breathe
+     ═══════════════════════════════════════════════════════════════ */
+  --background: #FFFFFF;
+  --foreground: #1A1A1A;
+  --card: #FFFFFF;
+  --card-foreground: #1A1A1A;
+  --popover: #FFFFFF;
+  --popover-foreground: #1A1A1A;
+
+  /* Bridal backgrounds */
+  --ivory: #FFFEF9;
+  --pearl: #FAF9F7;
+  --champagne-bg: #FBF8F4;
+  --cream: #FFFDF5;
+
+  /* ═══════════════════════════════════════════════════════════════
+     ACCENT COLORS — Luxury and elegance (Gold as primary accent)
+     ═══════════════════════════════════════════════════════════════ */
+  --gold: #C9A962;
+  --gold-light: #D4B978;
+  --gold-dark: #B8954D;
+  --rose-gold: #B76E79;
+  --champagne: #E8DCC4;
+
+  /* ═══════════════════════════════════════════════════════════════
+     TEXT COLORS — Contrast and readability
+     ═══════════════════════════════════════════════════════════════ */
+  --black: #1A1A1A;
+  --charcoal: #2D2D2D;
+  --gray-dark: #4A4A4A;
+  --gray: #6B6B6B;
+  --gray-light: #9CA3AF;
+  --gray-muted: #D1D5DB;
+
+  /* ═══════════════════════════════════════════════════════════════
+     SOFT ACCENTS — Tenderness and romance (2024-2025 trend)
+     ═══════════════════════════════════════════════════════════════ */
+  --blush: #FDF2F0;
+  --blush-dark: #F5E1DD;
+  --dusty-rose: #D4A5A5;
+  --sage: #9CAF88;
+  --dusty-blue: #A4B8C4;
+
+  /* ═══════════════════════════════════════════════════════════════
+     FUNCTIONAL COLORS
+     ═══════════════════════════════════════════════════════════════ */
+  --success: #059669;
+  --error: #DC2626;
+  --warning: #D97706;
+
+  /* shadcn/ui compatibility */
+  --primary: #1A1A1A;
+  --primary-foreground: #FFFFFF;
+  --secondary: #FAF9F7;
+  --secondary-foreground: #1A1A1A;
+  --muted: #FAF9F7;
+  --muted-foreground: #6B6B6B;
+  --accent: #FBF8F4;
+  --accent-foreground: #1A1A1A;
+  --destructive: #DC2626;
+  --border: #E8DCC4;
+  --input: #E8DCC4;
+  --ring: #C9A962;
+
+  /* Charts */
+  --chart-1: #C9A962;
+  --chart-2: #B76E79;
+  --chart-3: #9CAF88;
+  --chart-4: #A4B8C4;
+  --chart-5: #D4A5A5;
+
+  /* Sidebar (admin) */
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #1A1A1A;
+  --sidebar-primary: #1A1A1A;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #FAF9F7;
+  --sidebar-accent-foreground: #1A1A1A;
+  --sidebar-border: #E8DCC4;
+  --sidebar-ring: #C9A962;
+
+  /* ═══════════════════════════════════════════════════════════════
+     TYPOGRAPHY — Luxury bridal feel
+     ═══════════════════════════════════════════════════════════════ */
+  --text-hero: clamp(3rem, 8vw, 5rem);
+  --text-h1: clamp(2.5rem, 5vw, 3.5rem);
+  --text-h2: clamp(2rem, 4vw, 3rem);
+  --text-h3: clamp(1.5rem, 3vw, 2rem);
+  --text-h4: clamp(1.25rem, 2vw, 1.5rem);
+
+  /* Letter spacing */
+  --tracking-tight: -0.01em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.02em;
+  --tracking-wider: 0.05em;
+  --tracking-widest: 0.1em;
+
+  /* ═══════════════════════════════════════════════════════════════
+     SHADOWS & OVERLAYS
+     ═══════════════════════════════════════════════════════════════ */
+  --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.08);
+  --shadow-medium: 0 8px 30px rgba(0, 0, 0, 0.12);
+  --shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.15);
+  --shadow-gold: 0 10px 30px rgba(201, 169, 98, 0.2);
+  --overlay-dark: rgba(0, 0, 0, 0.5);
+  --overlay-light: rgba(255, 255, 255, 0.9);
+
+  /* ═══════════════════════════════════════════════════════════════
+     GRADIENTS
+     ═══════════════════════════════════════════════════════════════ */
+  --gradient-gold: linear-gradient(135deg, #C9A962 0%, #D4B978 50%, #C9A962 100%);
+  --gradient-hero-overlay: linear-gradient(to top, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.3) 30%, transparent 60%);
+  --gradient-shine: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.4) 50%, transparent 100%);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: #1A1A1A;
+  --foreground: #FFFFFF;
+  --card: #2D2D2D;
+  --card-foreground: #FFFFFF;
+  --popover: #2D2D2D;
+  --popover-foreground: #FFFFFF;
+  --primary: #FFFFFF;
+  --primary-foreground: #1A1A1A;
+  --secondary: #2D2D2D;
+  --secondary-foreground: #FFFFFF;
+  --muted: #2D2D2D;
+  --muted-foreground: #9CA3AF;
+  --accent: #2D2D2D;
+  --accent-foreground: #FFFFFF;
+  --destructive: #DC2626;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.15);
+  --ring: #C9A962;
+  --sidebar: #2D2D2D;
+  --sidebar-foreground: #FFFFFF;
+  --sidebar-primary: #C9A962;
+  --sidebar-primary-foreground: #1A1A1A;
+  --sidebar-accent: #1A1A1A;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-ring: #C9A962;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   BASE STYLES
+   ═══════════════════════════════════════════════════════════════ */
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
-  body {
-    @apply bg-background text-foreground;
+
+  html {
+    scroll-behavior: smooth;
   }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-sans);
+  }
+
+  /* Typography */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    letter-spacing: var(--tracking-wide);
+  }
+
+  h1 {
+    font-size: var(--text-h1);
+    line-height: 1.2;
+  }
+
+  h2 {
+    font-size: var(--text-h2);
+    line-height: 1.2;
+  }
+
+  h3 {
+    font-size: var(--text-h3);
+    line-height: 1.3;
+  }
+
+  h4 {
+    font-size: var(--text-h4);
+    line-height: 1.4;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CUSTOM UTILITY CLASSES
+   ═══════════════════════════════════════════════════════════════ */
+
+@layer utilities {
+  /* Fonts */
+  .font-serif {
+    font-family: var(--font-serif);
+  }
+
+  .font-sans {
+    font-family: var(--font-sans);
+  }
+
+  /* Gold accent colors */
+  .text-gold {
+    color: var(--gold);
+  }
+
+  .bg-gold {
+    background-color: var(--gold);
+  }
+
+  .border-gold {
+    border-color: var(--gold);
+  }
+
+  /* Bridal backgrounds */
+  .bg-ivory {
+    background-color: var(--ivory);
+  }
+
+  .bg-pearl {
+    background-color: var(--pearl);
+  }
+
+  .bg-champagne-bg {
+    background-color: var(--champagne-bg);
+  }
+
+  .bg-champagne {
+    background-color: var(--champagne-bg);
+  }
+
+  /* Container with centering */
+  .container {
+    width: 100%;
+    max-width: 1280px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  @media (min-width: 640px) {
+    .container {
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .container {
+      padding-left: 4rem;
+      padding-right: 4rem;
+    }
+  }
+
+  /* Letter spacing */
+  .tracking-wide {
+    letter-spacing: var(--tracking-wide);
+  }
+
+  .tracking-wider {
+    letter-spacing: var(--tracking-wider);
+  }
+
+  .tracking-widest {
+    letter-spacing: var(--tracking-widest);
+  }
+
+  /* Shadows */
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+
+  .shadow-hover {
+    box-shadow: var(--shadow-hover);
+  }
+
+  .shadow-gold {
+    box-shadow: var(--shadow-gold);
+  }
+
+  /* Text sizes */
+  .text-hero {
+    font-size: var(--text-hero);
+    line-height: 1.1;
+  }
+
+  /* Gradient backgrounds */
+  .bg-gradient-gold {
+    background: var(--gradient-gold);
+  }
+
+  .bg-gradient-hero {
+    background: var(--gradient-hero-overlay);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ANIMATIONS
+   ═══════════════════════════════════════════════════════════════ */
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes kenBurns {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes scrollBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(10px);
+  }
+}
+
+@keyframes heartBeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+}
+
+@keyframes shine {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Animation utilities */
+@layer utilities {
+  .animate-fade-up {
+    animation: fadeUp 0.8s ease-out forwards;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+  }
+
+  .animate-ken-burns {
+    animation: kenBurns 12s ease-out forwards;
+  }
+
+  .animate-shimmer {
+    background: linear-gradient(90deg, var(--champagne-bg) 25%, var(--pearl) 50%, var(--champagne-bg) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  .animate-scroll-bounce {
+    animation: scrollBounce 2s ease-in-out infinite;
+  }
+
+  .animate-heart-beat {
+    animation: heartBeat 0.4s ease;
+  }
+
+  .animate-slide-in {
+    animation: slideIn 0.5s ease-out forwards;
+  }
+}
+
+/* Staggered animation delays */
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
+.stagger-5 { animation-delay: 0.5s; }
+
+/* ═══════════════════════════════════════════════════════════════
+   COMPONENT STYLES
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Gold button with shine effect */
+.btn-gold {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 2.5rem;
+  background: var(--gradient-gold);
+  color: white;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  border: none;
+  overflow: hidden;
+  transition: all 0.4s ease;
+}
+
+.btn-gold::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.btn-gold:hover::before {
+  left: 100%;
+}
+
+.btn-gold:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-gold);
+}
+
+/* Outline button with fill effect */
+.btn-outline-fill {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.875rem 2.375rem;
+  background: transparent;
+  color: var(--black);
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  border: 1px solid var(--black);
+  overflow: hidden;
+  transition: color 0.4s ease;
+}
+
+.btn-outline-fill::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 100%;
+  background: var(--black);
+  transition: width 0.4s ease;
+  z-index: -1;
+}
+
+.btn-outline-fill:hover {
+  color: white;
+}
+
+.btn-outline-fill:hover::before {
+  width: 100%;
+}
+
+/* Navigation link with gold underline */
+.nav-link-gold {
+  position: relative;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--charcoal);
+  transition: color 0.3s ease;
+}
+
+.nav-link-gold::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--gold);
+  transition: width 0.3s ease;
+}
+
+.nav-link-gold:hover::after,
+.nav-link-gold.active::after {
+  width: 100%;
+}
+
+.nav-link-gold:hover {
+  color: var(--black);
+}
+
+/* Skeleton loading */
+.skeleton {
+  background: linear-gradient(90deg, var(--champagne-bg) 25%, var(--pearl) 50%, var(--champagne-bg) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+}
+
+/* Scroll indicator */
+.scroll-indicator {
+  animation: scrollBounce 2s ease-in-out infinite;
+}
+
+/* Image hover zoom */
+.img-zoom {
+  overflow: hidden;
+}
+
+.img-zoom img {
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.img-zoom:hover img {
+  transform: scale(1.05);
+}
+
+/* Card lift effect */
+.card-lift {
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.5s ease;
+}
+
+.card-lift:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-hover);
+}
+
+/* Gold border reveal */
+.border-reveal::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: var(--gold);
+  transition: all 0.4s ease;
+}
+
+.border-reveal:hover::after {
+  left: 0;
+  width: 100%;
+}
+
+/* Section spacing */
+.section-spacing {
+  padding-top: clamp(5rem, 10vw, 8.75rem);
+  padding-bottom: clamp(5rem, 10vw, 8.75rem);
+}
+
+.section-spacing-sm {
+  padding-top: clamp(3rem, 6vw, 5rem);
+  padding-bottom: clamp(3rem, 6vw, 5rem);
+}
+
+/* Container */
+.container-wide {
+  max-width: 1440px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: clamp(1.25rem, 5vw, 5rem);
+  padding-right: clamp(1.25rem, 5vw, 5rem);
+}
+
+.container-narrow {
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: clamp(1.25rem, 5vw, 5rem);
+  padding-right: clamp(1.25rem, 5vw, 5rem);
 }

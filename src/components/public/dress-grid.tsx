@@ -1,33 +1,36 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { DressCard } from "./dress-card";
-import { Skeleton } from "@/components/ui/skeleton";
+import { DressCard, DressCardSkeleton } from "./dress-card";
+import { cn } from "@/lib/utils";
+import type { Dress } from "@/types/api";
 
 interface DressGridProps {
-  dresses?: Array<{
-    id: string;
-    name: string;
-    slug: string;
-    image?: string;
-    category?: string;
-    isPopular?: boolean;
-  }>;
+  dresses?: Dress[];
   isLoading?: boolean;
+  columns?: 2 | 3 | 4;
+  onQuickView?: (dress: Dress) => void;
 }
 
-export function DressGrid({ dresses = [], isLoading }: DressGridProps) {
+export function DressGrid({
+  dresses = [],
+  isLoading,
+  columns = 3,
+  onQuickView,
+}: DressGridProps) {
   const t = useTranslations("catalog");
+
+  const gridCols = {
+    2: "grid-cols-1 sm:grid-cols-2",
+    3: "grid-cols-2 lg:grid-cols-3",
+    4: "grid-cols-2 md:grid-cols-3 xl:grid-cols-4",
+  };
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="space-y-3">
-            <Skeleton className="aspect-[3/4] w-full" />
-            <Skeleton className="h-4 w-3/4" />
-            <Skeleton className="h-4 w-1/2" />
-          </div>
+      <div className={cn("grid gap-6 md:gap-8", gridCols[columns])}>
+        {Array.from({ length: columns * 2 }).map((_, i) => (
+          <DressCardSkeleton key={i} />
         ))}
       </div>
     );
@@ -35,16 +38,27 @@ export function DressGrid({ dresses = [], isLoading }: DressGridProps) {
 
   if (dresses.length === 0) {
     return (
-      <div className="text-center py-12">
-        <p className="text-muted-foreground">{t("noResults")}</p>
+      <div className="text-center py-20">
+        <div className="w-16 h-px bg-gold/30 mx-auto mb-6" />
+        <p className="font-serif text-xl text-muted-foreground mb-2">
+          {t("noResults")}
+        </p>
+        <p className="text-sm text-muted-foreground/70">
+          {t("tryAdjustingFilters")}
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      {dresses.map((dress) => (
-        <DressCard key={dress.id} {...dress} />
+    <div className={cn("grid gap-6 md:gap-8", gridCols[columns])}>
+      {dresses.map((dress, index) => (
+        <DressCard
+          key={dress.id}
+          dress={dress}
+          index={index}
+          onQuickView={onQuickView}
+        />
       ))}
     </div>
   );

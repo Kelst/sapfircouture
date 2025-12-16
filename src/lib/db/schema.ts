@@ -63,11 +63,26 @@ export const verifications = pgTable("verifications", {
 });
 
 // App tables
+export const heroSlides = pgTable("hero_slides", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  image: text("image").notNull(),
+  titleEn: varchar("title_en", { length: 255 }),
+  titleUk: varchar("title_uk", { length: 255 }),
+  subtitleEn: text("subtitle_en"),
+  subtitleUk: text("subtitle_uk"),
+  linkUrl: varchar("link_url", { length: 255 }),
+  order: integer("order").notNull().default(0),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
 export const collections = pgTable("collections", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: varchar("name", { length: 100 }).notNull(),
   slug: varchar("slug", { length: 100 }).notNull().unique(),
   description: text("description"),
+  isFeatured: boolean("is_featured").notNull().default(false),
   order: integer("order").notNull().default(0),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
@@ -167,3 +182,5 @@ export type ContactRequest = typeof contactRequests.$inferSelect;
 export type NewContactRequest = typeof contactRequests.$inferInsert;
 export type SocialLink = typeof socialLinks.$inferSelect;
 export type NewSocialLink = typeof socialLinks.$inferInsert;
+export type HeroSlide = typeof heroSlides.$inferSelect;
+export type NewHeroSlide = typeof heroSlides.$inferInsert;

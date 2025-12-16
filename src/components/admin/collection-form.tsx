@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Form,
@@ -38,6 +39,7 @@ export function CollectionForm({ collection }: CollectionFormProps) {
       name: collection?.name ?? "",
       slug: collection?.slug ?? "",
       description: collection?.description ?? "",
+      isFeatured: collection?.isFeatured ?? false,
       order: collection?.order ?? 0,
     },
   });
@@ -134,6 +136,27 @@ export function CollectionForm({ collection }: CollectionFormProps) {
                     />
                   </FormControl>
                   <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="isFeatured"
+              render={({ field }) => (
+                <FormItem className="flex items-center justify-between rounded-lg border p-4">
+                  <div className="space-y-0.5">
+                    <FormLabel className="text-base">Featured Collection</FormLabel>
+                    <FormDescription>
+                      Display this collection on the homepage
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
                 </FormItem>
               )}
             />

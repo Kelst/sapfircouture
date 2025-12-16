@@ -1,42 +1,217 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useState, useEffect, useCallback } from "react";
+import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
+import Image from "next/image";
+import { cn } from "@/lib/utils";
+import type { HeroSlide } from "@/types/api";
+import { getHeroSlides } from "@/lib/api/client";
+import { getHeroSlideText, type Locale } from "@/types/api";
+import { ChevronDown } from "lucide-react";
 
-export function HeroSection() {
+interface HeroSectionProps {
+  slides?: HeroSlide[];
+}
+
+export function HeroSection({ slides: initialSlides }: HeroSectionProps) {
   const t = useTranslations("hero");
+  const locale = useLocale() as Locale;
+  const [slides, setSlides] = useState<HeroSlide[]>(initialSlides ?? []);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isLoading, setIsLoading] = useState(!initialSlides);
+
+  // Fetch slides if not provided
+  useEffect(() => {
+    if (initialSlides) return;
+
+    async function fetchSlides() {
+      try {
+        const data = await getHeroSlides();
+        setSlides(data);
+      } catch (error) {
+        console.error("Failed to fetch hero slides:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchSlides();
+  }, [initialSlides]);
+
+  // Auto-advance slides
+  useEffect(() => {
+    if (slides.length <= 1) return;
+
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 6000);
+
+    return () => clearInterval(interval);
+  }, [slides.length]);
+
+  const goToSlide = useCallback((index: number) => {
+    setCurrentSlide(index);
+  }, []);
+
+  const scrollToContent = useCallback(() => {
+    window.scrollTo({
+      top: window.innerHeight,
+      behavior: "smooth",
+    });
+  }, []);
+
+  // Fallback content when no slides
+  if (!isLoading && slides.length === 0) {
+    return (
+      <section className="relative h-screen flex items-center justify-center bg-gradient-to-b from-ivory to-pearl">
+        <div className="container text-center">
+          <h1 className="font-serif text-hero font-light tracking-wide text-foreground mb-4 animate-fade-up">
+            {t("title")}
+          </h1>
+          <p
+            className="text-lg text-muted-foreground mb-8 animate-fade-up"
+            style={{ animationDelay: "200ms" }}
+          >
+            {t("subtitle")}
+          </p>
+          <div
+            className="animate-fade-up"
+            style={{ animationDelay: "400ms" }}
+          >
+            <Link href="/catalog" className="btn-gold">
+              {t("cta")}
+            </Link>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
-    <section className="relative h-[80vh] flex items-center justify-center bg-gradient-to-b from-background to-muted">
-      <div className="container text-center">
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-4xl md:text-6xl font-bold mb-4"
-        >
-          {t("title")}
-        </motion.h1>
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="text-xl text-muted-foreground mb-8"
-        >
-          {t("subtitle")}
-        </motion.p>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-        >
-          <Link href="/catalog">
-            <Button size="lg">{t("cta")}</Button>
-          </Link>
-        </motion.div>
-      </div>
+    <section className="relative h-screen overflow-hidden">
+      {/* Slides */}
+      {slides.map((slide, index) => {
+        const title = getHeroSlideText(slide, "title", locale);
+        const subtitle = getHeroSlideText(slide, "subtitle", locale);
+
+        return (
+          <div
+            key={slide.id}
+            className={cn(
+              "absolute inset-0 transition-opacity duration-1000",
+              index === currentSlide ? "opacity-100 z-10" : "opacity-0 z-0"
+            )}
+          >
+            {/* Image with Ken Burns effect */}
+            <div
+              className={cn(
+                "absolute inset-0",
+                index === currentSlide && "animate-ken-burns"
+              )}
+            >
+              <Image
+                src={slide.image}
+                alt={title || "Hero image"}
+                fill
+                priority={index === 0}
+                sizes="100vw"
+                className="object-cover"
+              />
+            </div>
+
+            {/* Gradient Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+
+            {/* Content */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="container text-center text-white">
+                {title && (
+                  <h1
+                    className={cn(
+                      "font-serif text-hero font-light tracking-wide mb-4",
+                      "transition-all duration-700 ease-out-expo",
+                      index === currentSlide
+                        ? "opacity-100 translate-y-0"
+                        : "opacity-0 translate-y-8"
+                    )}
+                    style={{ transitionDelay: index === currentSlide ? "300ms" : "0ms" }}
+                  >
+                    {title}
+                  </h1>
+                )}
+                {subtitle && (
+                  <p
+                    className={cn(
+                      "text-lg md:text-xl text-white/80 mb-8 max-w-2xl mx-auto",
+                      "transition-all duration-700 ease-out-expo",
+                      index === currentSlide
+                        ? "opacity-100 translate-y-0"
+                        : "opacity-0 translate-y-8"
+                    )}
+                    style={{ transitionDelay: index === currentSlide ? "500ms" : "0ms" }}
+                  >
+                    {subtitle}
+                  </p>
+                )}
+                {slide.linkUrl && (
+                  <div
+                    className={cn(
+                      "transition-all duration-700 ease-out-expo",
+                      index === currentSlide
+                        ? "opacity-100 translate-y-0"
+                        : "opacity-0 translate-y-8"
+                    )}
+                    style={{ transitionDelay: index === currentSlide ? "700ms" : "0ms" }}
+                  >
+                    <Link
+                      href={slide.linkUrl}
+                      className="btn-gold"
+                    >
+                      {t("cta")}
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      })}
+
+      {/* Slide Indicators */}
+      {slides.length > 1 && (
+        <div className="absolute bottom-24 left-1/2 -translate-x-1/2 z-20 flex items-center gap-3">
+          {slides.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => goToSlide(index)}
+              className={cn(
+                "w-12 h-0.5 transition-all duration-500",
+                index === currentSlide
+                  ? "bg-white"
+                  : "bg-white/30 hover:bg-white/50"
+              )}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Scroll Indicator */}
+      <button
+        onClick={scrollToContent}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 text-white/70 hover:text-white transition-colors"
+        aria-label="Scroll to content"
+      >
+        <ChevronDown className="w-8 h-8 animate-scroll-bounce" />
+      </button>
+
+      {/* Loading State */}
+      {isLoading && (
+        <div className="absolute inset-0 bg-ivory flex items-center justify-center">
+          <div className="w-16 h-16 border-2 border-gold/20 border-t-gold rounded-full animate-spin" />
+        </div>
+      )}
     </section>
   );
 }

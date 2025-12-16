@@ -14,16 +14,37 @@
     "subtitle": "Exclusive wedding dress collection",
     "cta": "View Catalog"
   },
+  "home": {
+    "featuredCollections": "Featured Collections",
+    "viewAllCollections": "View All Collections",
+    "ctaTitle": "Book Your Fitting",
+    "ctaSubtitle": "Experience the magic of finding your perfect dress with a personalized consultation",
+    "ctaButton": "Schedule Appointment"
+  },
   "catalog": {
     "title": "Our Collection",
+    "subtitle": "Discover our exquisite collection of wedding dresses",
     "filters": {
       "all": "All",
       "style": "Style",
-      "color": "Color",
-      "price": "Price Range"
+      "collection": "Collection",
+      "clear": "Clear Filters"
     },
     "noResults": "No dresses found",
-    "details": "View Details"
+    "tryAdjustingFilters": "Try adjusting your filters",
+    "details": "View Details",
+    "showingResults": "Showing {count} dresses",
+    "loadMore": "Load More"
+  },
+  "dress": {
+    "collection": "Collection",
+    "style": "Style",
+    "bookFitting": "Book a Fitting",
+    "share": "Share",
+    "similarDresses": "You May Also Love",
+    "description": "Description",
+    "notFound": "Dress not found",
+    "backToCatalog": "Back to Catalog"
   },
   "about": {
     "title": "About Us",
@@ -31,6 +52,12 @@
   },
   "contacts": {
     "title": "Contact Us",
+    "subtitle": "We would love to hear from you. Schedule your appointment or send us a message.",
+    "formTitle": "Send a Message",
+    "infoTitle": "Get in Touch",
+    "phone": "Phone",
+    "email": "Email",
+    "followUs": "Follow Us",
     "form": {
       "name": "Your Name",
       "phone": "Phone Number",
@@ -65,5 +92,15 @@
     "back": "Back",
     "next": "Next",
     "previous": "Previous"
+  },
+  "footer": {
+    "tagline": "Your dream wedding dress awaits. We create magical moments for your special day.",
+    "navigation": "Navigation",
+    "contact": "Contact",
+    "hours": "Working Hours",
+    "byAppointment": "By appointment only",
+    "rights": "All rights reserved",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service"
   }
 }

@@ -2,21 +2,18 @@
 
 import { useLocale } from "next-intl";
 import { usePathname, useRouter } from "@/i18n/navigation";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Globe } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const languages = [
-  { code: "en", name: "English" },
-  { code: "uk", name: "Українська" },
+  { code: "en", name: "EN", fullName: "English" },
+  { code: "uk", name: "UK", fullName: "Українська" },
 ] as const;
 
-export function LanguageSwitcher() {
+interface LanguageSwitcherProps {
+  variant?: "default" | "transparent";
+}
+
+export function LanguageSwitcher({ variant = "default" }: LanguageSwitcherProps) {
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
@@ -26,23 +23,39 @@ export function LanguageSwitcher() {
   };
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon">
-          <Globe className="h-4 w-4" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        {languages.map((lang) => (
-          <DropdownMenuItem
-            key={lang.code}
+    <div className="flex items-center gap-1">
+      {languages.map((lang, index) => (
+        <span key={lang.code} className="flex items-center">
+          <button
             onClick={() => switchLocale(lang.code)}
-            className={locale === lang.code ? "bg-accent" : ""}
+            className={cn(
+              "text-xs font-sans font-medium tracking-wider transition-all duration-300",
+              "hover:text-gold focus:outline-none",
+              locale === lang.code
+                ? "text-gold"
+                : variant === "transparent"
+                ? "text-foreground/70"
+                : "text-muted-foreground"
+            )}
+            aria-label={`Switch to ${lang.fullName}`}
+            aria-current={locale === lang.code ? "true" : undefined}
           >
             {lang.name}
-          </DropdownMenuItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+          </button>
+          {index < languages.length - 1 && (
+            <span
+              className={cn(
+                "mx-2 text-xs",
+                variant === "transparent"
+                  ? "text-foreground/30"
+                  : "text-muted-foreground/50"
+              )}
+            >
+              /
+            </span>
+          )}
+        </span>
+      ))}
+    </div>
   );
 }

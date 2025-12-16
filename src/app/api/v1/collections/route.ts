@@ -11,6 +11,7 @@ export async function GET() {
         name: collections.name,
         slug: collections.slug,
         description: collections.description,
+        isFeatured: collections.isFeatured,
         order: collections.order,
         createdAt: collections.createdAt,
       })

@@ -158,3 +158,71 @@ export async function saveContactSettings(data: ContactSettings) {
   revalidatePath("/admin/settings");
   return { success: true };
 }
+
+// Content Settings (Homepage & About page)
+const CONTENT_SETTINGS_KEYS = {
+  brandStatementEn: "brand_statement_en",
+  brandStatementUk: "brand_statement_uk",
+  aboutContentEn: "about_content_en",
+  aboutContentUk: "about_content_uk",
+  ctaBannerImage: "cta_banner_image",
+  ctaBannerTextEn: "cta_banner_text_en",
+  ctaBannerTextUk: "cta_banner_text_uk",
+} as const;
+
+export interface ContentSettings {
+  brandStatementEn: string;
+  brandStatementUk: string;
+  aboutContentEn: string;
+  aboutContentUk: string;
+  ctaBannerImage: string;
+  ctaBannerTextEn: string;
+  ctaBannerTextUk: string;
+}
+
+export async function getContentSettings(): Promise<ContentSettings> {
+  const [
+    brandStatementEn,
+    brandStatementUk,
+    aboutContentEn,
+    aboutContentUk,
+    ctaBannerImage,
+    ctaBannerTextEn,
+    ctaBannerTextUk,
+  ] = await Promise.all([
+    getSetting(CONTENT_SETTINGS_KEYS.brandStatementEn),
+    getSetting(CONTENT_SETTINGS_KEYS.brandStatementUk),
+    getSetting(CONTENT_SETTINGS_KEYS.aboutContentEn),
+    getSetting(CONTENT_SETTINGS_KEYS.aboutContentUk),
+    getSetting(CONTENT_SETTINGS_KEYS.ctaBannerImage),
+    getSetting(CONTENT_SETTINGS_KEYS.ctaBannerTextEn),
+    getSetting(CONTENT_SETTINGS_KEYS.ctaBannerTextUk),
+  ]);
+
+  return {
+    brandStatementEn: brandStatementEn ?? "",
+    brandStatementUk: brandStatementUk ?? "",
+    aboutContentEn: aboutContentEn ?? "",
+    aboutContentUk: aboutContentUk ?? "",
+    ctaBannerImage: ctaBannerImage ?? "",
+    ctaBannerTextEn: ctaBannerTextEn ?? "",
+    ctaBannerTextUk: ctaBannerTextUk ?? "",
+  };
+}
+
+export async function saveContentSettings(data: ContentSettings) {
+  await requireAdmin();
+
+  await Promise.all([
+    setSetting(CONTENT_SETTINGS_KEYS.brandStatementEn, data.brandStatementEn),
+    setSetting(CONTENT_SETTINGS_KEYS.brandStatementUk, data.brandStatementUk),
+    setSetting(CONTENT_SETTINGS_KEYS.aboutContentEn, data.aboutContentEn),
+    setSetting(CONTENT_SETTINGS_KEYS.aboutContentUk, data.aboutContentUk),
+    setSetting(CONTENT_SETTINGS_KEYS.ctaBannerImage, data.ctaBannerImage),
+    setSetting(CONTENT_SETTINGS_KEYS.ctaBannerTextEn, data.ctaBannerTextEn),
+    setSetting(CONTENT_SETTINGS_KEYS.ctaBannerTextUk, data.ctaBannerTextUk),
+  ]);
+
+  revalidatePath("/admin/settings");
+  return { success: true };
+}

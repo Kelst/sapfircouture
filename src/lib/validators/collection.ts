@@ -8,6 +8,7 @@ export const collectionSchema = z.object({
     .max(100)
     .regex(/^[a-z0-9-]+$/, "Slug must contain only lowercase letters, numbers, and hyphens"),
   description: z.string().nullable().optional(),
+  isFeatured: z.boolean().optional(),
   order: z.number().int().min(0),
 });
 
