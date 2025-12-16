@@ -72,6 +72,14 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
     .toUpperCase()
     .slice(0, 2);
 
+  // Primary navigation item
+  const primaryItem = {
+    title: "Collections",
+    url: "/admin/collections",
+    icon: LayoutGrid,
+    isActive: pathname.includes("/admin/collections"),
+  };
+
   const navItems = [
     {
       title: "Statistics",
@@ -84,12 +92,6 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
       url: "/admin/hero-slides",
       icon: Image,
       isActive: pathname.includes("/admin/hero-slides"),
-    },
-    {
-      title: "Collections",
-      url: "/admin/collections",
-      icon: LayoutGrid,
-      isActive: pathname.includes("/admin/collections"),
     },
     {
       title: "Styles",
@@ -138,6 +140,26 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
       </SidebarHeader>
 
       <SidebarContent>
+        {/* Primary: Collections */}
+        <SidebarGroup>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                tooltip={primaryItem.title}
+                isActive={primaryItem.isActive}
+                className="bg-gradient-to-r from-pink-500/10 to-purple-500/10 hover:from-pink-500/20 hover:to-purple-500/20 font-medium"
+              >
+                <Link href={primaryItem.url}>
+                  <primaryItem.icon className="text-pink-600" />
+                  <span>{primaryItem.title}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarGroup>
+
+        {/* Other menu items */}
         <SidebarGroup>
           <SidebarGroupLabel>Management</SidebarGroupLabel>
           <SidebarMenu>

@@ -9,14 +9,17 @@ import { getDressServer, getDressesServer } from "@/lib/api/client";
 import { getStyleName, type Locale } from "@/types/api";
 import { ChevronLeft } from "lucide-react";
 import { trackDressView } from "@/actions/views.actions";
+import { ProductSchema, BreadcrumbSchema } from "@/components/seo/json-ld";
 import type { Metadata } from "next";
+
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://sapfircouture.com";
 
 interface DressPageProps {
   params: Promise<{ slug: string; locale: string }>;
 }
 
 export async function generateMetadata({ params }: DressPageProps): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug, locale } = await params;
   const dress = await getDressServer(slug);
 
   if (!dress) {
@@ -25,10 +28,35 @@ export async function generateMetadata({ params }: DressPageProps): Promise<Meta
     };
   }
 
+  const url = `/catalog/${slug}`;
+  const description = dress.description || `Discover ${dress.name} from our exclusive wedding dress collection at Sapfir Couture`;
+
   return {
-    title: `${dress.name} - Sapfir Couture`,
-    description: dress.description || `Discover ${dress.name} from our exclusive wedding dress collection`,
+    title: dress.name,
+    description,
+    alternates: {
+      canonical: `${baseUrl}${url}`,
+      languages: {
+        en: `${baseUrl}${url}`,
+        uk: `${baseUrl}/uk${url}`,
+      },
+    },
     openGraph: {
+      title: `${dress.name} | Sapfir Couture`,
+      description,
+      url: `${baseUrl}${locale === "en" ? "" : `/${locale}`}${url}`,
+      type: "website",
+      images: dress.images.map((img) => ({
+        url: img,
+        width: 1200,
+        height: 630,
+        alt: dress.name,
+      })),
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${dress.name} | Sapfir Couture`,
+      description,
       images: dress.images[0] ? [dress.images[0]] : [],
     },
   };
@@ -57,9 +85,29 @@ export default async function DressPage({ params }: DressPageProps) {
   const filteredSimilar = similarDresses.filter((d) => d.id !== dress.id);
 
   return (
-    <main className="min-h-screen bg-white overflow-x-hidden">
-      {/* Breadcrumb */}
-      <div className="bg-ivory py-4">
+    <>
+      {/* JSON-LD Structured Data */}
+      <ProductSchema
+        name={dress.name}
+        description={dress.description || undefined}
+        image={dress.images}
+        url={`/catalog/${dress.slug}`}
+        category={dress.collection?.name || "Wedding Dress"}
+      />
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", url: "/" },
+          { name: "Catalog", url: "/catalog" },
+          ...(dress.collection
+            ? [{ name: dress.collection.name, url: `/catalog?collection=${dress.collection.slug}` }]
+            : []),
+          { name: dress.name, url: `/catalog/${dress.slug}` },
+        ]}
+      />
+
+      <main className="min-h-screen bg-white overflow-x-hidden">
+        {/* Breadcrumb */}
+        <div className="bg-ivory py-4">
         <div className="container">
           <Link
             href="/catalog"
@@ -144,10 +192,11 @@ export default async function DressPage({ params }: DressPageProps) {
         </div>
       </section>
 
-      {/* Similar Dresses */}
-      {filteredSimilar.length > 0 && (
-        <SimilarDresses dresses={filteredSimilar} />
-      )}
-    </main>
+        {/* Similar Dresses */}
+        {filteredSimilar.length > 0 && (
+          <SimilarDresses dresses={filteredSimilar} />
+        )}
+      </main>
+    </>
   );
 }
