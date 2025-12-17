@@ -1,18 +1,20 @@
-.PHONY: help dev prod stop restart logs build seed clean
+.PHONY: help dev prod stop restart logs build seed seed-content seed-all clean
 
 # Default target
 help:
 	@echo "Sapfir Couture - Wedding Salon"
 	@echo ""
 	@echo "Usage:"
-	@echo "  make dev      - Start development environment"
-	@echo "  make prod     - Start production environment"
-	@echo "  make stop     - Stop all containers"
-	@echo "  make restart  - Restart production"
-	@echo "  make logs     - View logs"
-	@echo "  make build    - Rebuild production images"
-	@echo "  make seed     - Create admin user"
-	@echo "  make clean    - Remove all containers and volumes"
+	@echo "  make dev          - Start development environment"
+	@echo "  make prod         - Start production environment"
+	@echo "  make stop         - Stop all containers"
+	@echo "  make restart      - Restart production"
+	@echo "  make logs         - View logs"
+	@echo "  make build        - Rebuild production images"
+	@echo "  make seed         - Create admin user"
+	@echo "  make seed-content - Add default content (order/delivery/payment info)"
+	@echo "  make seed-all     - Create admin + add all content"
+	@echo "  make clean        - Remove all containers and volumes"
 	@echo ""
 
 # Development
@@ -70,6 +72,28 @@ seed:
 		corepack enable pnpm && \
 		pnpm install --frozen-lockfile && \
 		pnpm db:seed"
+
+# Seed default content (order steps, delivery, payment, about page)
+seed-content:
+	@if [ ! -f .env ]; then \
+		echo "Error: .env file not found."; \
+		exit 1; \
+	fi
+	docker compose -f docker-compose.prod.yml run --rm migrate sh -c "\
+		corepack enable pnpm && \
+		pnpm install --frozen-lockfile && \
+		pnpm db:seed-content"
+
+# Seed everything (admin + content)
+seed-all:
+	@if [ ! -f .env ]; then \
+		echo "Error: .env file not found."; \
+		exit 1; \
+	fi
+	docker compose -f docker-compose.prod.yml run --rm migrate sh -c "\
+		corepack enable pnpm && \
+		pnpm install --frozen-lockfile && \
+		pnpm db:seed-all"
 
 # Clean up
 clean:

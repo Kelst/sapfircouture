@@ -232,3 +232,73 @@ export async function saveContentSettings(data: ContentSettings) {
     throw error;
   }
 }
+
+// Order Information Settings (How to Order, Delivery, Payment Methods)
+const ORDER_INFO_SETTINGS_KEYS = {
+  orderSteps: "order_steps",
+  deliveryInfo: "delivery_info",
+  paymentMethods: "payment_methods",
+} as const;
+
+export interface OrderStep {
+  id: string;
+  stepEn: string;
+  stepUk: string;
+  order: number;
+}
+
+export interface DeliveryInfoItem {
+  id: string;
+  titleEn: string;
+  titleUk: string;
+  descriptionEn: string;
+  descriptionUk: string;
+  order: number;
+}
+
+export interface PaymentMethod {
+  id: string;
+  nameEn: string;
+  nameUk: string;
+  order: number;
+}
+
+export interface OrderInfoSettings {
+  orderSteps: OrderStep[];
+  deliveryInfo: DeliveryInfoItem[];
+  paymentMethods: PaymentMethod[];
+}
+
+export async function getOrderInfoSettings(): Promise<OrderInfoSettings> {
+  const [orderSteps, deliveryInfo, paymentMethods] = await Promise.all([
+    getSetting(ORDER_INFO_SETTINGS_KEYS.orderSteps),
+    getSetting(ORDER_INFO_SETTINGS_KEYS.deliveryInfo),
+    getSetting(ORDER_INFO_SETTINGS_KEYS.paymentMethods),
+  ]);
+
+  return {
+    orderSteps: orderSteps ? JSON.parse(orderSteps) : [],
+    deliveryInfo: deliveryInfo ? JSON.parse(deliveryInfo) : [],
+    paymentMethods: paymentMethods ? JSON.parse(paymentMethods) : [],
+  };
+}
+
+export async function saveOrderInfoSettings(data: OrderInfoSettings) {
+  await requireAdmin();
+
+  try {
+    await Promise.all([
+      setSetting(ORDER_INFO_SETTINGS_KEYS.orderSteps, JSON.stringify(data.orderSteps)),
+      setSetting(ORDER_INFO_SETTINGS_KEYS.deliveryInfo, JSON.stringify(data.deliveryInfo)),
+      setSetting(ORDER_INFO_SETTINGS_KEYS.paymentMethods, JSON.stringify(data.paymentMethods)),
+    ]);
+
+    revalidatePath("/admin/settings");
+    revalidatePath("/contacts");
+    revalidatePath("/uk/contacts");
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to save order info settings:", error);
+    throw error;
+  }
+}

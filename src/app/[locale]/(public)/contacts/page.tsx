@@ -1,16 +1,19 @@
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale } from "next-intl/server";
 import { ContactForm } from "@/components/public/contact-form";
 import { SocialLinks } from "@/components/public/social-links";
 import { getSettingsServer, getSocialLinksServer } from "@/lib/api/client";
-import { Phone, Mail, MapPin, Clock } from "lucide-react";
+import { getOrderInfoSettings } from "@/actions/settings.actions";
+import { Phone, Mail, MapPin, Clock, ShoppingBag, Truck, CreditCard } from "lucide-react";
 
 export default async function ContactsPage() {
   const t = await getTranslations("contacts");
   const tFooter = await getTranslations("footer");
+  const locale = await getLocale();
 
-  const [settings, socialLinks] = await Promise.all([
+  const [settings, socialLinks, orderInfo] = await Promise.all([
     getSettingsServer(),
     getSocialLinksServer(),
+    getOrderInfoSettings(),
   ]);
 
   return (
@@ -139,6 +142,106 @@ export default async function ContactsPage() {
           </div>
         </div>
       </section>
+
+      {/* Order Information Section */}
+      {(orderInfo.orderSteps.length > 0 || orderInfo.deliveryInfo.length > 0 || orderInfo.paymentMethods.length > 0) && (
+        <section className="py-16 bg-ivory">
+          <div className="container">
+            <div className="grid md:grid-cols-3 gap-12">
+              {/* How to Order */}
+              {orderInfo.orderSteps.length > 0 && (
+                <div>
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-10 h-10 rounded-full bg-gold/10 flex items-center justify-center">
+                      <ShoppingBag className="w-5 h-5 text-gold" />
+                    </div>
+                    <h2 className="font-serif text-h4 font-light">
+                      {t("howToOrder")}
+                    </h2>
+                  </div>
+                  <ol className="space-y-4">
+                    {orderInfo.orderSteps
+                      .sort((a, b) => a.order - b.order)
+                      .map((step, index) => (
+                        <li key={step.id} className="flex gap-3">
+                          <span className="flex-shrink-0 w-6 h-6 rounded-full bg-gold text-white text-sm flex items-center justify-center">
+                            {index + 1}
+                          </span>
+                          <span className="text-muted-foreground">
+                            {locale === "uk" ? step.stepUk : step.stepEn}
+                          </span>
+                        </li>
+                      ))}
+                  </ol>
+                  {/* Social Links for ordering */}
+                  {socialLinks.length > 0 && (
+                    <div className="mt-6 pt-4 border-t border-muted/30">
+                      <SocialLinks links={socialLinks} iconSize="md" />
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Delivery Information */}
+              {orderInfo.deliveryInfo.length > 0 && (
+                <div>
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-10 h-10 rounded-full bg-gold/10 flex items-center justify-center">
+                      <Truck className="w-5 h-5 text-gold" />
+                    </div>
+                    <h2 className="font-serif text-h4 font-light">
+                      {t("delivery")}
+                    </h2>
+                  </div>
+                  <ul className="space-y-4">
+                    {orderInfo.deliveryInfo
+                      .sort((a, b) => a.order - b.order)
+                      .map((item) => (
+                        <li key={item.id}>
+                          <p className="font-medium text-foreground">
+                            {locale === "uk" ? item.titleUk : item.titleEn}
+                          </p>
+                          {(item.descriptionEn || item.descriptionUk) && (
+                            <p className="text-sm text-muted-foreground mt-1">
+                              {locale === "uk" ? item.descriptionUk : item.descriptionEn}
+                            </p>
+                          )}
+                        </li>
+                      ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Payment Methods */}
+              {orderInfo.paymentMethods.length > 0 && (
+                <div>
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-10 h-10 rounded-full bg-gold/10 flex items-center justify-center">
+                      <CreditCard className="w-5 h-5 text-gold" />
+                    </div>
+                    <h2 className="font-serif text-h4 font-light">
+                      {t("payment")}
+                    </h2>
+                  </div>
+                  <ul className="space-y-3">
+                    {orderInfo.paymentMethods
+                      .sort((a, b) => a.order - b.order)
+                      .map((method) => (
+                        <li
+                          key={method.id}
+                          className="flex items-center gap-2 text-muted-foreground"
+                        >
+                          <span className="w-1.5 h-1.5 rounded-full bg-gold" />
+                          {locale === "uk" ? method.nameUk : method.nameEn}
+                        </li>
+                      ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Map Section */}
       {settings.google_maps_url && (

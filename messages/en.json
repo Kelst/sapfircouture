@@ -50,7 +50,22 @@
   },
   "about": {
     "title": "About Us",
-    "description": "Welcome to our wedding salon"
+    "subtitle": "Royal Bridal Manufacturer",
+    "description": "Welcome to our wedding salon",
+    "features": {
+      "quality": {
+        "title": "Premium Quality",
+        "description": "We use only the finest fabrics and materials to create dresses that exceed expectations"
+      },
+      "exclusive": {
+        "title": "Wide Selection",
+        "description": "Extensive collection of styles to find your perfect dream dress"
+      },
+      "custom": {
+        "title": "Any Complexity",
+        "description": "From classic elegance to unique custom designs — we bring your vision to life"
+      }
+    }
   },
   "contacts": {
     "title": "Contact Us",
@@ -61,6 +76,9 @@
     "email": "Email",
     "followUs": "Message Us",
     "followUsDescription": "Contact us through your preferred platform",
+    "howToOrder": "How to Order",
+    "delivery": "Delivery",
+    "payment": "Payment Methods",
     "form": {
       "name": "Your Name",
       "phone": "Phone Number",

@@ -1,13 +1,15 @@
-import { getTelegramSettings, getContactSettings, getContentSettings } from "@/actions/settings.actions";
+import { getTelegramSettings, getContactSettings, getContentSettings, getOrderInfoSettings } from "@/actions/settings.actions";
 import { TelegramSettingsForm } from "@/components/admin/telegram-settings-form";
 import { ContactSettingsForm } from "@/components/admin/contact-settings-form";
 import { ContentSettingsForm } from "@/components/admin/content-settings-form";
+import { OrderInfoSettingsForm } from "@/components/admin/order-info-settings-form";
 
 export default async function SettingsPage() {
-  const [telegramSettings, contactSettings, contentSettings] = await Promise.all([
+  const [telegramSettings, contactSettings, contentSettings, orderInfoSettings] = await Promise.all([
     getTelegramSettings(),
     getContactSettings(),
     getContentSettings(),
+    getOrderInfoSettings(),
   ]);
 
   return (
@@ -21,6 +23,7 @@ export default async function SettingsPage() {
 
       <div className="grid gap-6">
         <ContactSettingsForm initialSettings={contactSettings} />
+        <OrderInfoSettingsForm initialSettings={orderInfoSettings} />
         <ContentSettingsForm initialSettings={contentSettings} />
         <TelegramSettingsForm initialSettings={telegramSettings} />
       </div>
