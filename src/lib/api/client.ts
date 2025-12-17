@@ -208,12 +208,16 @@ export async function submitContact(
 
 export function getServerApiUrl(): string {
   // In development, use localhost
-  // In production, use the actual domain
+  // In production, use the actual domain or internal URL
   if (process.env.NEXT_PUBLIC_API_URL) {
     return process.env.NEXT_PUBLIC_API_URL;
   }
   if (process.env.VERCEL_URL) {
     return `https://${process.env.VERCEL_URL}`;
+  }
+  // Use 127.0.0.1 for Docker containers (localhost may not resolve)
+  if (process.env.NODE_ENV === "production") {
+    return "http://127.0.0.1:3000";
   }
   return "http://localhost:3000";
 }
