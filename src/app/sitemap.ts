@@ -3,6 +3,9 @@ import { db } from "@/lib/db";
 import { dresses, collections } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 
+// Generate sitemap at runtime, not build time
+export const dynamic = "force-dynamic";
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://sapfircouture.com";
   const locales = ["en", "uk"];
