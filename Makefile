@@ -68,10 +68,13 @@ seed:
 		echo "Error: .env file not found."; \
 		exit 1; \
 	fi
-	docker compose -f docker-compose.prod.yml run --rm migrate sh -c "\
-		corepack enable pnpm && \
-		pnpm install --frozen-lockfile && \
-		pnpm db:seed"
+	@DB_PASS=$$(grep DB_PASSWORD .env | cut -d= -f2); \
+	docker run --rm \
+		--network sapfircouture_wedding \
+		-v $$(pwd):/app \
+		-w /app \
+		-e DATABASE_URL="postgresql://wedding:$$DB_PASS@postgres:5432/wedding_salon" \
+		node:20-alpine sh -c "corepack enable pnpm && pnpm install --frozen-lockfile && pnpm db:seed"
 
 # Seed default content (order steps, delivery, payment, about page)
 seed-content:
@@ -79,10 +82,13 @@ seed-content:
 		echo "Error: .env file not found."; \
 		exit 1; \
 	fi
-	docker compose -f docker-compose.prod.yml run --rm migrate sh -c "\
-		corepack enable pnpm && \
-		pnpm install --frozen-lockfile && \
-		pnpm db:seed-content"
+	@DB_PASS=$$(grep DB_PASSWORD .env | cut -d= -f2); \
+	docker run --rm \
+		--network sapfircouture_wedding \
+		-v $$(pwd):/app \
+		-w /app \
+		-e DATABASE_URL="postgresql://wedding:$$DB_PASS@postgres:5432/wedding_salon" \
+		node:20-alpine sh -c "corepack enable pnpm && pnpm install --frozen-lockfile && pnpm db:seed-content"
 
 # Seed everything (admin + content)
 seed-all:
@@ -90,10 +96,13 @@ seed-all:
 		echo "Error: .env file not found."; \
 		exit 1; \
 	fi
-	docker compose -f docker-compose.prod.yml run --rm migrate sh -c "\
-		corepack enable pnpm && \
-		pnpm install --frozen-lockfile && \
-		pnpm db:seed-all"
+	@DB_PASS=$$(grep DB_PASSWORD .env | cut -d= -f2); \
+	docker run --rm \
+		--network sapfircouture_wedding \
+		-v $$(pwd):/app \
+		-w /app \
+		-e DATABASE_URL="postgresql://wedding:$$DB_PASS@postgres:5432/wedding_salon" \
+		node:20-alpine sh -c "corepack enable pnpm && pnpm install --frozen-lockfile && pnpm db:seed-all"
 
 # Clean up
 clean:
