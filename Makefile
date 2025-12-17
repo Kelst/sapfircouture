@@ -69,10 +69,11 @@ seed:
 		exit 1; \
 	fi
 	@DB_PASS=$$(grep DB_PASSWORD .env | cut -d= -f2); \
-	docker run --rm \
+	docker run --rm -it \
 		--network sapfircouture_wedding \
 		-v $$(pwd):/app \
 		-w /app \
+		-e CI=true \
 		-e DATABASE_URL="postgresql://wedding:$$DB_PASS@postgres:5432/wedding_salon" \
 		node:20-alpine sh -c "corepack enable pnpm && pnpm install --frozen-lockfile && pnpm db:seed"
 
@@ -83,10 +84,11 @@ seed-content:
 		exit 1; \
 	fi
 	@DB_PASS=$$(grep DB_PASSWORD .env | cut -d= -f2); \
-	docker run --rm \
+	docker run --rm -it \
 		--network sapfircouture_wedding \
 		-v $$(pwd):/app \
 		-w /app \
+		-e CI=true \
 		-e DATABASE_URL="postgresql://wedding:$$DB_PASS@postgres:5432/wedding_salon" \
 		node:20-alpine sh -c "corepack enable pnpm && pnpm install --frozen-lockfile && pnpm db:seed-content"
 
@@ -97,10 +99,11 @@ seed-all:
 		exit 1; \
 	fi
 	@DB_PASS=$$(grep DB_PASSWORD .env | cut -d= -f2); \
-	docker run --rm \
+	docker run --rm -it \
 		--network sapfircouture_wedding \
 		-v $$(pwd):/app \
 		-w /app \
+		-e CI=true \
 		-e DATABASE_URL="postgresql://wedding:$$DB_PASS@postgres:5432/wedding_salon" \
 		node:20-alpine sh -c "corepack enable pnpm && pnpm install --frozen-lockfile && pnpm db:seed-all"
 
