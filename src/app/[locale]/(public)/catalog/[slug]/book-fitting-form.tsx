@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/form";
 import { Check, Loader2, AlertCircle } from "lucide-react";
 import { SocialLinks } from "@/components/public/social-links";
+import type { SocialLink } from "@/types/api";
 
 const bookingSchema = z.object({
   name: z.string().min(2, "Name is required"),
@@ -46,9 +47,10 @@ type BookingFormData = z.infer<typeof bookingSchema>;
 interface BookFittingFormProps {
   dressId: string;
   dressName: string;
+  socialLinks: SocialLink[];
 }
 
-export function BookFittingForm({ dressId, dressName }: BookFittingFormProps) {
+export function BookFittingForm({ dressId, dressName, socialLinks }: BookFittingFormProps) {
   const t = useTranslations("dress");
   const tForm = useTranslations("contacts.form");
   const tCommon = useTranslations("contacts");
@@ -242,12 +244,14 @@ export function BookFittingForm({ dressId, dressName }: BookFittingFormProps) {
               </button>
 
               {/* Social Links */}
-              <div className="mt-8 pt-6 border-t border-muted/30">
-                <p className="text-xs uppercase tracking-wider text-muted-foreground text-center mb-4">
-                  {t("orContactVia")}
-                </p>
-                <SocialLinks className="justify-center" iconSize="md" />
-              </div>
+              {socialLinks.length > 0 && (
+                <div className="mt-8 pt-6 border-t border-muted/30">
+                  <p className="text-xs uppercase tracking-wider text-muted-foreground text-center mb-4">
+                    {t("orContactVia")}
+                  </p>
+                  <SocialLinks className="justify-center" iconSize="md" links={socialLinks} />
+                </div>
+              )}
             </form>
           </Form>
         )}

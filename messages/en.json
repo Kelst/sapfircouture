@@ -45,7 +45,8 @@
     "description": "Description",
     "notFound": "Dress not found",
     "backToCatalog": "Back to Catalog",
-    "orContactVia": "or message us"
+    "orContactVia": "or message us",
+    "exclusiveNote": "is available exclusively at Sapfir Couture. Contact us for details."
   },
   "about": {
     "title": "About Us",
@@ -109,5 +110,51 @@
     "rights": "All rights reserved",
     "privacy": "Privacy Policy",
     "terms": "Terms of Service"
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "back": "Back to Home",
+    "lastUpdated": "This policy describes how we handle your personal information.",
+    "sections": {
+      "collection": {
+        "title": "Information We Collect",
+        "content": "When you contact us through our website, we collect the information you provide: your name, phone number, email address, and message. This information is necessary to respond to your inquiry."
+      },
+      "usage": {
+        "title": "How We Use Your Information",
+        "content": "We use your contact information solely to respond to your inquiries and provide information about our services. We do not use your data for marketing purposes without your consent."
+      },
+      "sharing": {
+        "title": "Information Sharing",
+        "content": "We do not sell or share your personal information with third parties. Your data is used only by our team to communicate with you."
+      },
+      "contact": {
+        "title": "Contact Us",
+        "content": "If you have questions about this policy or wish to delete your data, please contact us through the contact form on our website."
+      }
+    }
+  },
+  "terms": {
+    "title": "Terms of Service",
+    "back": "Back to Home",
+    "lastUpdated": "By using our website, you agree to the following terms.",
+    "sections": {
+      "usage": {
+        "title": "Website Usage",
+        "content": "This website is provided for informational purposes about Sapfir Couture wedding salon and our dress collections. You may browse and use the website for personal, non-commercial purposes."
+      },
+      "content": {
+        "title": "Content & Copyright",
+        "content": "All images, text, and other content on this website are the property of Sapfir Couture. You may not copy, reproduce, or distribute our content without written permission."
+      },
+      "liability": {
+        "title": "Limitation of Liability",
+        "content": "We strive to keep our website accurate and up-to-date. However, we do not guarantee that all information is complete or error-free. Dress availability and appearance may vary."
+      },
+      "contact": {
+        "title": "Contact",
+        "content": "For any questions regarding these terms, please contact us through our website."
+      }
+    }
   }
 }

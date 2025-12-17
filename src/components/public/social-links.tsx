@@ -1,15 +1,11 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import type { SocialLink } from "@/types/api";
-import { getSocialLinks } from "@/lib/api/client";
 import { Instagram, Facebook, Youtube, Twitter, Phone, Mail, MapPin } from "lucide-react";
 
 interface SocialLinksProps {
   className?: string;
   iconSize?: "sm" | "md" | "lg";
-  links?: SocialLink[];
+  links: SocialLink[];
 }
 
 // Map platform names to icons
@@ -47,46 +43,8 @@ const sizeClasses = {
 export function SocialLinks({
   className,
   iconSize = "md",
-  links: providedLinks,
+  links,
 }: SocialLinksProps) {
-  const [links, setLinks] = useState<SocialLink[]>(providedLinks ?? []);
-  const [loading, setLoading] = useState(!providedLinks);
-
-  useEffect(() => {
-    if (providedLinks) return;
-
-    async function fetchLinks() {
-      try {
-        const data = await getSocialLinks();
-        setLinks(data);
-      } catch (error) {
-        console.error("Failed to fetch social links:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchLinks();
-  }, [providedLinks]);
-
-  if (loading) {
-    return (
-      <div className={cn("flex items-center gap-3", className)}>
-        {[1, 2, 3].map((i) => (
-          <div
-            key={i}
-            className={cn(
-              "rounded-full bg-gold/10 animate-pulse",
-              iconSize === "sm" && "w-8 h-8",
-              iconSize === "md" && "w-10 h-10",
-              iconSize === "lg" && "w-12 h-12"
-            )}
-          />
-        ))}
-      </div>
-    );
-  }
-
   if (links.length === 0) {
     return null;
   }

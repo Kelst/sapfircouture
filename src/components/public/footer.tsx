@@ -1,29 +1,17 @@
-"use client";
-
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { SocialLinks } from "./social-links";
 import { Phone, Mail, MapPin, Clock } from "lucide-react";
-import { useEffect, useState } from "react";
-import { getSettings } from "@/lib/api/client";
-import type { Settings } from "@/types/api";
+import type { Settings, SocialLink } from "@/types/api";
 
-export function Footer() {
+interface FooterProps {
+  settings: Settings;
+  socialLinks: SocialLink[];
+}
+
+export function Footer({ settings, socialLinks }: FooterProps) {
   const t = useTranslations("nav");
   const tFooter = useTranslations("footer");
-  const [settings, setSettings] = useState<Settings>({});
-
-  useEffect(() => {
-    async function fetchSettings() {
-      try {
-        const data = await getSettings();
-        setSettings(data);
-      } catch (error) {
-        console.error("Failed to fetch settings:", error);
-      }
-    }
-    fetchSettings();
-  }, []);
 
   const navLinks = [
     { href: "/", label: t("home") },
@@ -61,7 +49,7 @@ export function Footer() {
             <p className="text-sm text-muted-foreground leading-relaxed mb-6">
               {tFooter("tagline")}
             </p>
-            <SocialLinks iconSize="sm" />
+            <SocialLinks iconSize="sm" links={socialLinks} />
           </div>
 
           {/* Navigation */}

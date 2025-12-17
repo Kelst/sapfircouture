@@ -5,7 +5,7 @@ import { DressGallery } from "@/components/public/dress-gallery";
 import { SimilarDresses } from "@/components/public/similar-dresses";
 import { BookFittingForm } from "./book-fitting-form";
 import { ShareButton } from "./share-button";
-import { getDressServer, getDressesServer } from "@/lib/api/client";
+import { getDressServer, getDressesServer, getSocialLinksServer } from "@/lib/api/client";
 import { getStyleName, type Locale } from "@/types/api";
 import { ChevronLeft } from "lucide-react";
 import { trackDressView } from "@/actions/views.actions";
@@ -75,11 +75,14 @@ export default async function DressPage({ params }: DressPageProps) {
   // Track view (fire-and-forget, doesn't block rendering)
   void trackDressView(dress.id);
 
-  // Fetch similar dresses (same collection or style)
-  const { dresses: similarDresses } = await getDressesServer({
-    collection: dress.collection?.slug,
-    limit: 6,
-  });
+  // Fetch similar dresses and social links in parallel
+  const [{ dresses: similarDresses }, socialLinks] = await Promise.all([
+    getDressesServer({
+      collection: dress.collection?.slug,
+      limit: 6,
+    }),
+    getSocialLinksServer(),
+  ]);
 
   // Filter out current dress from similar dresses
   const filteredSimilar = similarDresses.filter((d) => d.id !== dress.id);
@@ -173,7 +176,7 @@ export default async function DressPage({ params }: DressPageProps) {
 
                 {/* CTA Section */}
                 <div className="space-y-4 pt-4">
-                  <BookFittingForm dressId={dress.id} dressName={dress.name} />
+                  <BookFittingForm dressId={dress.id} dressName={dress.name} socialLinks={socialLinks} />
 
                   {/* Share */}
                   <ShareButton title={dress.name} />
@@ -182,8 +185,7 @@ export default async function DressPage({ params }: DressPageProps) {
                 {/* Additional Info */}
                 <div className="pt-8 space-y-4 text-sm text-muted-foreground">
                   <p>
-                    * {dress.name} is available exclusively at Sapfir Couture.
-                    Book your private fitting today.
+                    * {dress.name} {t("exclusiveNote")}
                   </p>
                 </div>
               </div>

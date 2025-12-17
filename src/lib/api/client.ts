@@ -2,6 +2,7 @@
 // API Client for Sapfir Couture
 // ═══════════════════════════════════════════════════════════════
 
+import { cache } from "react";
 import type {
   ApiResponse,
   Collection,
@@ -15,6 +16,20 @@ import type {
   Content,
   ContactRequest,
 } from "@/types/api";
+
+// ═══════════════════════════════════════════════════════════════
+// Cache Configuration
+// ═══════════════════════════════════════════════════════════════
+// Revalidation times in seconds (configurable via env variables)
+// Set to 0 to disable caching (always fresh data)
+const CACHE_TIMES = {
+  // Hero slides, collections, styles (rarely change)
+  STATIC: parseInt(process.env.CACHE_STATIC || "1800"),      // 30 min default
+  // Dresses list (may change more often)
+  DYNAMIC: parseInt(process.env.CACHE_DYNAMIC || "30"),      // 30 sec default
+  // Settings, social links, content
+  SETTINGS: parseInt(process.env.CACHE_SETTINGS || "150"),   // 2.5 min default
+} as const;
 
 const API_BASE = "/api/v1";
 
@@ -203,11 +218,14 @@ export function getServerApiUrl(): string {
   return "http://localhost:3000";
 }
 
-async function fetchServerApi<T>(endpoint: string): Promise<ApiResponse<T>> {
+async function fetchServerApi<T>(
+  endpoint: string,
+  revalidate: number = CACHE_TIMES.DYNAMIC
+): Promise<ApiResponse<T>> {
   try {
     const baseUrl = getServerApiUrl();
     const res = await fetch(`${baseUrl}/api/v1${endpoint}`, {
-      cache: "no-store", // Always fetch fresh data
+      next: { revalidate }, // Cache with revalidation
     });
     return res.json();
   } catch (error) {
@@ -223,17 +241,17 @@ async function fetchServerApi<T>(endpoint: string): Promise<ApiResponse<T>> {
 
 // Server-side versions
 export async function getCollectionsServer(): Promise<Collection[]> {
-  const response = await fetchServerApi<Collection[]>("/collections");
+  const response = await fetchServerApi<Collection[]>("/collections", CACHE_TIMES.STATIC);
   return response.data ?? [];
 }
 
 export async function getCollectionServer(slug: string): Promise<Collection | null> {
-  const response = await fetchServerApi<Collection>(`/collections/${slug}`);
+  const response = await fetchServerApi<Collection>(`/collections/${slug}`, CACHE_TIMES.STATIC);
   return response.success ? response.data ?? null : null;
 }
 
 export async function getFeaturedCollectionsServer(): Promise<FeaturedCollection[]> {
-  const response = await fetchServerApi<FeaturedCollection[]>("/collections/featured");
+  const response = await fetchServerApi<FeaturedCollection[]>("/collections/featured", CACHE_TIMES.STATIC);
   return response.data ?? [];
 }
 
@@ -248,7 +266,7 @@ export async function getDressesServer(filters?: DressFilters): Promise<DressesR
   const queryString = params.toString();
   const endpoint = queryString ? `/dresses?${queryString}` : "/dresses";
 
-  const response = await fetchServerApi<Dress[]>(endpoint);
+  const response = await fetchServerApi<Dress[]>(endpoint, CACHE_TIMES.DYNAMIC);
 
   return {
     dresses: response.data ?? [],
@@ -258,33 +276,38 @@ export async function getDressesServer(filters?: DressFilters): Promise<DressesR
   };
 }
 
-export async function getDressServer(slug: string): Promise<Dress | null> {
-  const response = await fetchServerApi<Dress>(`/dresses/${slug}`);
+// Internal function for fetching dress (used by cached wrapper)
+async function _getDressServer(slug: string): Promise<Dress | null> {
+  const response = await fetchServerApi<Dress>(`/dresses/${slug}`, CACHE_TIMES.DYNAMIC);
   return response.success ? response.data ?? null : null;
 }
 
+// Cached version - deduplicates calls within the same request
+// Use this in generateMetadata and page components to avoid duplicate fetches
+export const getDressServer = cache(_getDressServer);
+
 export async function getStylesServer(): Promise<Style[]> {
-  const response = await fetchServerApi<Style[]>("/styles");
+  const response = await fetchServerApi<Style[]>("/styles", CACHE_TIMES.STATIC);
   return response.data ?? [];
 }
 
 export async function getHeroSlidesServer(): Promise<HeroSlide[]> {
-  const response = await fetchServerApi<HeroSlide[]>("/hero-slides");
+  const response = await fetchServerApi<HeroSlide[]>("/hero-slides", CACHE_TIMES.STATIC);
   return response.data ?? [];
 }
 
 export async function getSocialLinksServer(): Promise<SocialLink[]> {
-  const response = await fetchServerApi<SocialLink[]>("/social-links");
+  const response = await fetchServerApi<SocialLink[]>("/social-links", CACHE_TIMES.SETTINGS);
   return response.data ?? [];
 }
 
 export async function getSettingsServer(): Promise<Settings> {
-  const response = await fetchServerApi<Settings>("/settings");
+  const response = await fetchServerApi<Settings>("/settings", CACHE_TIMES.SETTINGS);
   return response.data ?? {};
 }
 
 export async function getContentServer(): Promise<Content> {
-  const response = await fetchServerApi<Content>("/content");
+  const response = await fetchServerApi<Content>("/content", CACHE_TIMES.SETTINGS);
   return (
     response.data ?? {
       brandStatement: { en: "", uk: "" },
