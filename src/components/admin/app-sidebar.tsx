@@ -15,6 +15,7 @@ import {
   Settings,
   Image,
   BarChart3,
+  MessageSquare,
 } from "lucide-react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -81,6 +82,12 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
   };
 
   const navItems = [
+    {
+      title: "Requests",
+      url: "/admin/requests",
+      icon: MessageSquare,
+      isActive: pathname.includes("/admin/requests"),
+    },
     {
       title: "Statistics",
       url: "/admin/statistics",
