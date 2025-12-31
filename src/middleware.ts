@@ -14,13 +14,19 @@ export default async function middleware(request: NextRequest) {
     // Get session token from cookie (better-auth default cookie name)
     const sessionToken = request.cookies.get("better-auth.session_token")?.value;
 
+    console.log("[MIDDLEWARE] Admin route:", pathname);
+    console.log("[MIDDLEWARE] Session token exists:", !!sessionToken);
+    console.log("[MIDDLEWARE] All cookies:", request.cookies.getAll().map(c => c.name));
+
     if (!sessionToken) {
+      console.log("[MIDDLEWARE] No session token, redirecting to login");
       // Redirect to login (use default locale - en)
       const loginUrl = new URL("/login", request.url);
       loginUrl.searchParams.set("callbackUrl", pathname);
       return NextResponse.redirect(loginUrl);
     }
 
+    console.log("[MIDDLEWARE] Session token found, allowing access");
     // Skip i18n middleware for admin routes
     return NextResponse.next();
   }

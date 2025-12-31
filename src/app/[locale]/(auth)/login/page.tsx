@@ -177,12 +177,17 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
+      console.log("[LOGIN] Starting sign in...", { email: email.trim().toLowerCase() });
+
       const result = await signIn.email({
         email: email.trim().toLowerCase(),
         password,
       });
 
+      console.log("[LOGIN] Sign in result:", JSON.stringify(result, null, 2));
+
       if (result.error) {
+        console.log("[LOGIN] Sign in error:", result.error);
         const parsedError = getErrorMessage(result.error);
         setError(parsedError);
 
@@ -196,9 +201,13 @@ export default function LoginPage() {
       }
 
       // Success - redirect
+      console.log("[LOGIN] Success! Redirecting to:", callbackUrl);
       router.push(callbackUrl);
+      console.log("[LOGIN] router.push called, now calling refresh...");
       router.refresh();
+      console.log("[LOGIN] router.refresh called");
     } catch (err) {
+      console.error("[LOGIN] Unexpected error:", err);
       // Network or unexpected errors
       setError({
         code: "NETWORK_ERROR",
