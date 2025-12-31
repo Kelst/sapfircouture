@@ -14,7 +14,8 @@ import {
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { signIn, signOut } from "@/lib/auth/client";
-import { Sparkles, Loader2, AlertCircle, Eye, EyeOff, ShieldX } from "lucide-react";
+import { Loader2, AlertCircle, Eye, EyeOff } from "lucide-react";
+import Image from "next/image";
 
 type ErrorCode =
   | "INVALID_EMAIL_OR_PASSWORD"
@@ -225,12 +226,19 @@ export default function LoginPage() {
       <Card className="w-full max-w-md relative shadow-xl border-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm">
         <CardHeader className="text-center pb-2">
           {/* Logo */}
-          <div className="mx-auto mb-4 w-16 h-16 bg-gradient-to-br from-pink-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-pink-500/25">
-            <Sparkles className="w-8 h-8 text-white" />
+          <div className="mx-auto mb-4">
+            <Image
+              src="/logo.svg"
+              alt="Sapfir Couture"
+              width={180}
+              height={72}
+              className="object-contain"
+              priority
+            />
           </div>
 
-          <CardTitle className="text-2xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
-            Sapfir Couture
+          <CardTitle className="text-xl font-medium text-foreground">
+            Admin Panel
           </CardTitle>
           <CardDescription className="text-base">
             Sign in to access the admin panel

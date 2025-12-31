@@ -8,15 +8,15 @@ import {
   Palette,
   LogOut,
   ChevronRight,
-  Sparkles,
   Home,
   Users,
   Share2,
   Settings,
-  Image,
+  Image as ImageIcon,
   BarChart3,
   MessageSquare,
 } from "lucide-react";
+import Image from "next/image";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -97,7 +97,7 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
     {
       title: "Hero Slides",
       url: "/admin/hero-slides",
-      icon: Image,
+      icon: ImageIcon,
       isActive: pathname.includes("/admin/hero-slides"),
     },
     {
@@ -133,9 +133,13 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <Link href="/admin">
-                <div className="bg-gradient-to-br from-pink-500 to-purple-600 text-white flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <Sparkles className="size-4" />
-                </div>
+                <Image
+                  src="/logo.svg"
+                  alt="Sapfir Couture"
+                  width={32}
+                  height={32}
+                  className="object-contain"
+                />
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">Sapfir Couture</span>
                   <span className="truncate text-xs text-muted-foreground">Admin Panel</span>

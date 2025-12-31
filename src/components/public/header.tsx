@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { LanguageSwitcher } from "./language-switcher";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 export function Header() {
   const t = useTranslations("nav");
@@ -50,15 +51,15 @@ export function Header() {
       >
         <div className="container flex items-center justify-between">
           {/* Logo */}
-          <Link
-            href="/"
-            className={cn(
-              "font-serif font-medium tracking-widest transition-[font-size] duration-200",
-              isScrolled ? "text-xl" : "text-2xl"
-            )}
-          >
-            <span className="text-foreground">SAPFIR</span>
-            <span className="text-gold ml-1">COUTURE</span>
+          <Link href="/" className="flex items-center">
+            <Image
+              src="/logo.svg"
+              alt="Sapfir Couture"
+              width={isScrolled ? 59 : 74}
+              height={isScrolled ? 23 : 29}
+              className="transition-all duration-200 object-contain"
+              priority
+            />
           </Link>
 
           {/* Desktop Navigation */}

@@ -110,7 +110,7 @@ export default async function DressPage({ params }: DressPageProps) {
 
       <main className="min-h-screen bg-white overflow-x-hidden">
         {/* Breadcrumb */}
-        <div className="bg-ivory py-4">
+        <div className="bg-ivory pt-8 pb-4">
         <div className="container">
           <Link
             href="/catalog"

@@ -3,6 +3,7 @@ import { Link } from "@/i18n/navigation";
 import { SocialLinks } from "./social-links";
 import { Phone, Mail, MapPin, Clock } from "lucide-react";
 import type { Settings, SocialLink } from "@/types/api";
+import Image from "next/image";
 
 interface FooterProps {
   settings: Settings;
@@ -39,12 +40,15 @@ export function Footer({ settings, socialLinks }: FooterProps) {
       <div className="container py-16 md:py-20">
         <div className={`grid gap-12 ${gridClasses}`}>
           {/* Brand Column */}
-          <div>
+          <div className="text-center md:text-left flex flex-col items-center md:items-start">
             <Link href="/" className="inline-block mb-6">
-              <h3 className="font-serif text-2xl tracking-widest">
-                <span className="text-foreground">SAPFIR</span>
-                <span className="text-gold ml-1">COUTURE</span>
-              </h3>
+              <Image
+                src="/logo.svg"
+                alt="Sapfir Couture"
+                width={180}
+                height={72}
+                className="object-contain"
+              />
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed mb-6">
               {tFooter("tagline")}
@@ -53,11 +57,11 @@ export function Footer({ settings, socialLinks }: FooterProps) {
           </div>
 
           {/* Navigation */}
-          <div>
+          <div className="text-center md:text-left">
             <h4 className="font-serif text-lg mb-6 text-foreground">
               {tFooter("navigation")}
             </h4>
-            <nav className="flex flex-col gap-3">
+            <nav className="flex flex-col items-center md:items-start gap-3">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
@@ -72,11 +76,11 @@ export function Footer({ settings, socialLinks }: FooterProps) {
 
           {/* Contact Info - show only if has data */}
           {(settings.contact_phones?.length || settings.contact_email || settings.address) && (
-            <div>
+            <div className="text-center md:text-left">
               <h4 className="font-serif text-lg mb-6 text-foreground">
                 {tFooter("contact")}
               </h4>
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col items-center md:items-start gap-4">
                 {settings.contact_phones && settings.contact_phones.length > 0 && (
                   <div className="flex items-start gap-3">
                     <Phone className="w-4 h-4 text-gold mt-0.5 flex-shrink-0" />
@@ -120,11 +124,11 @@ export function Footer({ settings, socialLinks }: FooterProps) {
 
           {/* Working Hours - show only if has data */}
           {settings.working_hours && (
-            <div>
+            <div className="text-center md:text-left">
               <h4 className="font-serif text-lg mb-6 text-foreground">
                 {tFooter("hours")}
               </h4>
-              <div className="flex items-start gap-3">
+              <div className="flex items-start justify-center md:justify-start gap-3">
                 <Clock className="w-4 h-4 text-gold mt-0.5 flex-shrink-0" />
                 <span className="text-sm text-muted-foreground whitespace-pre-line">
                   {settings.working_hours}

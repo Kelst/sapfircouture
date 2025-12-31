@@ -33,6 +33,15 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: "/apple-touch-icon.png",
+  },
+  manifest: "/site.webmanifest",
   openGraph: {
     type: "website",
     siteName: "Sapfir Couture",
@@ -42,12 +51,21 @@ export const metadata: Metadata = {
     description:
       "Discover elegance at Sapfir Couture - your destination for exquisite wedding dresses and bridal fashion.",
     url: baseUrl,
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Sapfir Couture - Premium Wedding Salon",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Sapfir Couture - Premium Wedding Salon",
     description:
       "Discover elegance at Sapfir Couture - your destination for exquisite wedding dresses and bridal fashion.",
+    images: ["/og-image.jpg"],
   },
   robots: {
     index: true,
